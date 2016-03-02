@@ -1,9 +1,9 @@
+// Package markdown implements a blackfriday.Renderer which produces abstract
+// syntax trees for Markdown.
+//
 // NOTE: The current implementation has not been well tested and should
 // definitely not be used for anything serious beyond this proof of concept.
 // Consider yourself warned :)
-
-// Package markdown implements a blackfriday.Renderer which produces abstract
-// syntax trees for Markdown.
 package markdown
 
 import (

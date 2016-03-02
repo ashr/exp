@@ -1,11 +1,11 @@
+// md2json is a tool for converting notes from Markdown to JSON format.
+//
+//    Usage: md2json FILE...
+//
 // NOTE: This is a very rought proof of concept. It will panic for many trivial
 // Markdown files with a slightly different structure than the one expected. At
 // this stage, it is meant to evaluate of it is worth doing the Markdown to JSON
 // conversion in the first place.
-
-// md2json is a tool for converting notes from Markdown to JSON format.
-//
-//    Usage: md2json FILE...
 package main
 
 import (
