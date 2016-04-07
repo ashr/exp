@@ -6,6 +6,7 @@ d.exe: main.asm
 main.asm: pe-hdr.bin _text.bin _rdata.bin _data.bin _rsrc.bin
 
 _text.bin: _text.asm
+	make -C _text
 	nasm -f bin -o $@ $<
 
 _rdata.bin: _rdata.asm
