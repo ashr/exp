@@ -10,4 +10,4 @@ all: $(BIN)
 .PHONY: clean
 
 clean:
-	rm -rf *.bin
+	rm -f $(BIN)
