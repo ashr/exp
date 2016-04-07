@@ -22,4 +22,9 @@ test: d.exe
 
 clean:
 	rm -f d.exe main.asm _text.asm _rdata.asm _data.asm pe-hdr.bin _text.bin _rdata.bin _data.bin _rsrc.bin
-	rm -rf _text _rdata _data
+	rm -f _text/*.asm _text/*.bin
+	rmdir --ignore-fail-on-non-empty _text
+	rm -f _rdata/*.asm _rdata/*.bin
+	rmdir --ignore-fail-on-non-empty _rdata
+	rm -f _data/*.asm _data/*.bin
+	rmdir --ignore-fail-on-non-empty _data
