@@ -25,6 +25,6 @@ clean:
 	rm -f _text/*.asm _text/*.bin
 	rmdir --ignore-fail-on-non-empty _text
 	rm -f _rdata/*.asm _rdata/*.bin
-	rmdir --ignore-fail-on-non-empty _rdata
+	@rmdir --ignore-fail-on-non-empty _rdata 2>/dev/null; true
 	rm -f _data/*.asm _data/*.bin
-	rmdir --ignore-fail-on-non-empty _data
+	@rmdir --ignore-fail-on-non-empty _data 2>/dev/null; true
