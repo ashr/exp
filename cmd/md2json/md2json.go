@@ -4,7 +4,7 @@
 //
 // NOTE: This is a very rought proof of concept. It will panic for many trivial
 // Markdown files with a slightly different structure than the one expected. At
-// this stage, it is meant to evaluate of it is worth doing the Markdown to JSON
+// this stage, it is meant to evaluate if it is worth doing the Markdown to JSON
 // conversion in the first place.
 package main
 
@@ -22,11 +22,20 @@ import (
 )
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "Usage: md2json FILE...")
+	const use = `
+Usage: md2json [OPTION]... FILE...
+`
+	fmt.Fprintln(os.Stderr, use)
 	flag.PrintDefaults()
 }
 
+var (
+	// empty specifies whether to include empty declarations.
+	empty bool
+)
+
 func main() {
+	flag.BoolVar(&empty, "empty", false, "include empty declarations")
 	flag.Usage = usage
 	flag.Parse()
 	for _, path := range flag.Args() {
@@ -69,6 +78,10 @@ func genAddrMapping(nodes []interface{}) map[string]string {
 			// ## 0x46019B
 			if n.Level == 2 {
 				curAddr = getString(n.Text)
+				if empty {
+					// Always include declaration, even if emtpy.
+					addrmap[curAddr] = ""
+				}
 			}
 		case markdown.BlockCode:
 			if curAddr == "" {
