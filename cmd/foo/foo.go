@@ -45,6 +45,26 @@ func init() {
 	fixDupFiles(".rdata", rdataFiles)
 	fixDupFiles(".data", dataFiles)
 	fixDupFiles(".bss", bssFiles)
+
+	// Initialize the absolute path to the notes repository.
+	err := initNotesDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Parse declarations in source files.
+	if err := parseFileDecls(".text", textFiles); err != nil {
+		log.Fatal(err)
+	}
+	if err := parseFileDecls(".rdata", rdataFiles); err != nil {
+		log.Fatal(err)
+	}
+	if err := parseFileDecls(".data", dataFiles); err != nil {
+		log.Fatal(err)
+	}
+	if err := parseFileDecls(".bss", bssFiles); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
@@ -203,22 +223,62 @@ func dumpSectionFiles(baseDir, sectName string, data []byte, sectBase uint64, fi
 	var binPaths []string
 	for _, file := range files {
 		binName := fmt.Sprintf("%s.bin", file.Name)
-		path := filepath.Join(dir, binName)
-		start := file.Start - sectBase
-		end := file.End + 1 - sectBase
-		if int(end) > len(data) {
-			end = uint64(len(data))
-		}
-		buf := data[start:end]
-		if err := ioutil.WriteFile(path, buf, 0644); err != nil {
-			return errutil.Err(err)
+		if sectName == ".text" && len(file.Decls) > 0 {
+			fileDir := filepath.Join(dir, file.Name)
+			if err := os.MkdirAll(fileDir, 0755); err != nil {
+				return errutil.Err(err)
+			}
+			var declBinPaths []string
+			for j, decl := range file.Decls {
+				if decl.Addr < file.Start || decl.Addr >= file.End {
+					return errutil.Newf("declaration address %06X not within %q source file range [%06X, %06X)", decl.Addr, file.Name, file.Start, file.End)
+				}
+				declA := file.Decls[j]
+				start := declA.Addr - sectBase
+				var end int
+				if len(file.Decls) > j+1 {
+					declB := file.Decls[j+1]
+					end = int(declB.Addr - sectBase)
+				} else {
+					end = int(file.End - sectBase)
+				}
+				if end > len(data) {
+					end = len(data)
+				}
+				declData := data[start:end]
+				declBinName := fmt.Sprintf("%06X.bin", decl.Addr)
+				declBinPath := filepath.Join(file.Name, declBinName)
+				declBinPaths = append(declBinPaths, declBinPath)
+				if err := dumpDecl(baseDir, sectName, file.Name, decl.Addr, declData); err != nil {
+					return errutil.Err(err)
+				}
+			}
+			// Dump Assembly incbin listing for each source file.
+			fileAsmName := fmt.Sprintf("%s.asm", file.Name)
+			sectDir := strings.Replace(sectName, ".", "_", -1)
+			fileAsmPath := filepath.Join(baseDir, sectDir, fileAsmName)
+			if err := dumpIncBin(fileAsmPath, declBinPaths); err != nil {
+				return errutil.Err(err)
+			}
+
+		} else {
+			path := filepath.Join(dir, binName)
+			start := file.Start - sectBase
+			end := file.End - sectBase
+			if int(end) > len(data) {
+				end = uint64(len(data))
+			}
+			buf := data[start:end]
+			if err := ioutil.WriteFile(path, buf, 0644); err != nil {
+				return errutil.Err(err)
+			}
 		}
 		binPath := filepath.Join(subDir, binName)
 		binPaths = append(binPaths, binPath)
 	}
 
 	// Dump padding file.
-	var dataLen uint64 = files[len(files)-1].End + 1 - sectBase
+	var dataLen uint64 = files[len(files)-1].End - sectBase
 	rem := int(dataLen) % align
 	if rem != 0 {
 		rem = align - rem
@@ -246,6 +306,17 @@ func dumpSectionFiles(baseDir, sectName string, data []byte, sectBase uint64, fi
 func dumpSection(baseDir, sectName string, data []byte) error {
 	fileName := fmt.Sprintf("%s.bin", strings.Replace(sectName, ".", "_", -1))
 	path := filepath.Join(baseDir, fileName)
+	if err := ioutil.WriteFile(path, data, 0644); err != nil {
+		return errutil.Err(err)
+	}
+	return nil
+}
+
+// dumpDecl stores the declaration data to a file within the given directory.
+func dumpDecl(baseDir, sectName, srcName string, declAddr uint64, data []byte) error {
+	sectDir := strings.Replace(sectName, ".", "_", -1)
+	fileName := fmt.Sprintf("%06X.bin", declAddr)
+	path := filepath.Join(baseDir, sectDir, srcName, fileName)
 	if err := ioutil.WriteFile(path, data, 0644); err != nil {
 		return errutil.Err(err)
 	}
