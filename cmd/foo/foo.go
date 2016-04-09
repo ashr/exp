@@ -21,7 +21,7 @@ import (
 
 func usage() {
 	const use = `
-Usage: foo [OPTION]... FILE.exe
+Usage: foo [OPTION]... FILE.exe...
 
 Flags:`
 	fmt.Println(use[1:])
@@ -36,7 +36,7 @@ var (
 
 func init() {
 	// Parse command line parameters.
-	flag.BoolVar(&verbose, "v", false, "Verbose output.")
+	flag.BoolVar(&verbose, "v", false, "verbose output")
 	flag.Usage = usage
 	flag.Parse()
 
