@@ -19,10 +19,10 @@ PERCENT = %
 	aspsx -q $< -o $@
 
 %.s: %.pre
-	cc1psx -quiet -g -version $< -o $@
+	cc1psx -quiet -g $< -o $@
 
 %.pre: %.c
-	cpppsx -undef -D__GNUC__=2 -v -lang-c -Dmips -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D__CHAR_UNSIGNED__ -D_LANGUAGE_C -DLANGUAGE_C $< -o $@
+	cpppsx -undef -D__GNUC__=2 -lang-c -Dmips -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D__CHAR_UNSIGNED__ -D_LANGUAGE_C -DLANGUAGE_C $< -o $@
 
 .PHONY: clean ${DIR}
 
@@ -35,14 +35,14 @@ clean:
 #ASM = $(C_ASM) $(CPP_ASM)
 
 #foo.sym:
-#	ccpsx -g -v a.c b.c -ofoo.cpe,$@
+#	ccpsx -g a.c b.c -ofoo.cpe,$@
 #	cpe2x foo.cpe
 
 #%.pre_cpp: %.cpp
-#	cpppsx -undef -D__GNUC__=2 -v -lang-c++ -D__cplusplus -Dmips -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D__CHAR_UNSIGNED__ -D_LANGUAGE_C_PLUS_PLUS $< -o $@
+#	cpppsx -undef -D__GNUC__=2 -lang-c++ -D__cplusplus -Dmips -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D__CHAR_UNSIGNED__ -D_LANGUAGE_C_PLUS_PLUS $< -o $@
 
 #%.s: %.pre_cpp
-#	cc1plpsx -quiet -g -version $< -o $@
+#	cc1plpsx -quiet -g $< -o $@
 
 #clean:
 #	rm -f *.pre *.pre_cpp *.s *.obj foo.cpe foo.sym
