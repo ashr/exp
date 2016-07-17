@@ -190,6 +190,8 @@ func parseSymbol94(r io.Reader) error {
 	//    0008 = structure field definition.
 	//    000A = structure type definition.
 	//    000D = type alias definition.
+	//    000F = enum type definition.
+	//    0010 = enum member definition.
 	//    0066 = end of symbol marker.
 	var defKind uint16
 
@@ -200,7 +202,7 @@ func parseSymbol94(r io.Reader) error {
 	dbg.Printf("defKind: %04X", defKind)
 
 	// Type.
-	//
+
 	//    0000 = long long
 	//    0001 = void
 	//    0002 = char
@@ -212,11 +214,62 @@ func parseSymbol94(r io.Reader) error {
 	//    0008 = struct_type
 	//    0009 = ?
 	//    000A = enum_type
-	//    000B = ?
+	//    000B = ? (enum member)
 	//    000C = unsigned char
 	//    000D = unsigned short
 	//    000E = unsigned int
 	//    000F = unsigned long
+
+	//    0010 = long long *
+	//    0011 = void *
+	//    0012 = char *
+	//    0013 = short *
+	//    0014 = int *
+	//    0015 = long *
+	//    0016 = float *
+	//    0017 = double *
+	//    0018 = struct_type *
+	//    0019 = ? *
+	//    001A = enum_type *
+	//    001B = ? *
+	//    001C = unsigned char *
+	//    001D = unsigned short *
+	//    001E = unsigned int *
+	//    001F = unsigned long *
+
+	//    0030 = long long [1]
+	//    0031 = void [1]
+	//    0032 = char [1]
+	//    0033 = short [1]
+	//    0034 = int [1]
+	//    0035 = long [1]
+	//    0036 = float [1]
+	//    0037 = double [1]
+	//    0038 = struct_type [1]
+	//    0039 = ? [1]
+	//    003A = enum_type [1]
+	//    003B = ? [1]
+	//    003C = unsigned char [1]
+	//    003D = unsigned short [1]
+	//    003E = unsigned int [1]
+	//    003F = unsigned long [1]
+
+	//    0090 = long long (*)()
+	//    0091 = void (*)()
+	//    0092 = char (*)()
+	//    0093 = short (*)()
+	//    0094 = int (*)()
+	//    0095 = long (*)()
+	//    0096 = float (*)()
+	//    0097 = double (*)()
+	//    0098 = struct_type (*)()
+	//    0099 = ? (*)()
+	//    009A = enum_type (*)()
+	//    009B = ? (*)()
+	//    009C = unsigned char (*)()
+	//    009D = unsigned short (*)()
+	//    009E = unsigned int (*)()
+	//    009F = unsigned long (*)()
 	var typ uint16
 
 	// Parse type.
@@ -273,7 +326,16 @@ func parseSymbol96(r io.Reader) error {
 	}
 	dbg.Printf("symbol 0x96 data: % X", buf)
 
-	// TODO: Parse array lengths.
+	// Parse array lengths.
+	n := getNArrays(typ)
+	for i := 0; i < n; i++ {
+		// Parse type.
+		var length uint32
+		if err := binary.Read(r, binary.LittleEndian, &length); err != nil {
+			return errutil.Err(err)
+		}
+		dbg.Printf("length: %d", length)
+	}
 
 	// Parse key.
 	key, err := readString(r)
@@ -290,6 +352,16 @@ func parseSymbol96(r io.Reader) error {
 	dbg.Println("val:", val)
 
 	return nil
+}
+
+// getNArrays returns the number of arrays contained within the given type.
+func getNArrays(typ uint16) int {
+	// TODO: Add support for more array types.
+	switch typ & 0xFFF0 {
+	case 0x0030:
+		return 1
+	}
+	return 0
 }
 
 // readString parses and returns a length prefixed string.
