@@ -290,7 +290,48 @@ func parseSymbol94(r io.Reader) error {
 	}
 	dbg.Printf("defKind: %04X", defKind)
 
-	// Type.
+	// Type. A type is made up of a 4-bit basic type specifyer, and a set of
+	// 2-bit type modifiers.
+
+	//     Basic type                                            xxxx
+	//        Modifier                                        xx
+	//           Modifier                                  xx
+	//              Modifier                            xx
+	//                 Modifier                      xx
+	//                    Modifier                xx
+	//                       Modifier          xx
+
+	// Example.
+	//
+	//     int * f_0064() {}
+	//
+	// Interpretation.
+	//
+	//     int                                                   0100
+	//        function                                        10
+	//           pointer                                   01
+	//                                                  00
+	//                                               00
+	//                                            00
+	//                                         00
+	//
+	//                                  0x64 = 00 00 00 00 01 10 0100
+
+	// Example.
+	//
+	//     int (*v_0094)();
+	//
+	// Interpretation.
+	//
+	//     int                                                   0100
+	//        pointer                                         01
+	//           function                                  10
+	//                                                  00
+	//                                               00
+	//                                            00
+	//                                         00
+	//
+	//                                  0x94 = 00 00 00 00 10 01 0100
 
 	//    0000 = long long
 	//    0001 = void
@@ -326,39 +367,39 @@ func parseSymbol94(r io.Reader) error {
 	//    001E = unsigned int *
 	//    001F = unsigned long *
 
-	//    0030 = long long [1]
-	//    0031 = void [1]
-	//    0032 = char [1]
-	//    0033 = short [1]
-	//    0034 = int [1]
-	//    0035 = long [1]
-	//    0036 = float [1]
-	//    0037 = double [1]
-	//    0038 = struct_type [1]
-	//    0039 = ? [1]
-	//    003A = enum_type [1]
-	//    003B = ? [1]
-	//    003C = unsigned char [1]
-	//    003D = unsigned short [1]
-	//    003E = unsigned int [1]
-	//    003F = unsigned long [1]
+	//    0020 = long long function
+	//    0021 = void function
+	//    0022 = char function
+	//    0023 = short function
+	//    0024 = int function
+	//    0025 = long function
+	//    0026 = float function
+	//    0027 = double function
+	//    0028 = struct_type function
+	//    0029 = ? function
+	//    002A = enum_type function
+	//    002B = ? function
+	//    002C = unsigned char function
+	//    002D = unsigned short function
+	//    002E = unsigned int function
+	//    002F = unsigned long function
 
-	//    0090 = long long (*)()
-	//    0091 = void (*)()
-	//    0092 = char (*)()
-	//    0093 = short (*)()
-	//    0094 = int (*)()
-	//    0095 = long (*)()
-	//    0096 = float (*)()
-	//    0097 = double (*)()
-	//    0098 = struct_type (*)()
-	//    0099 = ? (*)()
-	//    009A = enum_type (*)()
-	//    009B = ? (*)()
-	//    009C = unsigned char (*)()
-	//    009D = unsigned short (*)()
-	//    009E = unsigned int (*)()
-	//    009F = unsigned long (*)()
+	//    0030 = long long array
+	//    0031 = void array
+	//    0032 = char array
+	//    0033 = short array
+	//    0034 = int array
+	//    0035 = long array
+	//    0036 = float array
+	//    0037 = double array
+	//    0038 = struct_type array
+	//    0039 = ? array
+	//    003A = enum_type array
+	//    003B = ? array
+	//    003C = unsigned char array
+	//    003D = unsigned short array
+	//    003E = unsigned int array
+	//    003F = unsigned long array
 	var typ uint16
 
 	// Parse type.
@@ -445,12 +486,14 @@ func parseSymbol96(r io.Reader) error {
 
 // getNArrays returns the number of arrays contained within the given type.
 func getNArrays(typ uint16) int {
-	// TODO: Add support for more array types.
-	switch typ & 0xFFF0 {
-	case 0x0030:
-		return 1
+	n := 0
+	for x := typ >> 4; x != 0; x >>= 2 {
+		// Check if array type (0b11).
+		if x&0x3 == 0x3 {
+			n++
+		}
 	}
-	return 0
+	return n
 }
 
 // readString parses and returns a length prefixed string.
