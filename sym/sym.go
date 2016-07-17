@@ -22,6 +22,9 @@ var dbg = log.New(os.Stdout, "", log.Lshortfile)
 // TODO: Figure out what the unknown data represents (search for unknown, buf
 // and []byte).
 
+// TODO: Add test cases covering symbol kind 0x84, 0x86, 0x90, 0x92, 0x98 and
+// 0x9A.
+
 // TODO: Consider the return type of Parse.
 //
 // Alternative 1.
@@ -127,13 +130,19 @@ func parseSymbol(r io.Reader) error {
 	//    0x02 = global variable placement (inside section).
 	//    0x80 = ?
 	//    0x82 = ?
+	//    0x84 = ?
+	//    0x86 = ?
 	//    0x88 = named source file.
 	//    0x8A = unnamed source file.
 	//    0x8C = function definition.
 	//    0x8E = ?
+	//    0x90 = ?
+	//    0x92 = ?
 	//    0x94 = global variable, function, enumerable type, enumerable member,
 	//           structure type or structure field definition.
 	//    0x96 = meta symbol; key-value pair.
+	//    0x98 = ?
+	//    0x9A = ?
 	var kind uint8
 
 	// Parse symbol kind.
@@ -152,6 +161,10 @@ func parseSymbol(r io.Reader) error {
 		return parseSymbol80(r)
 	case 0x82:
 		return parseSymbol82(r)
+	case 0x84:
+		return parseSymbol84(r)
+	case 0x86:
+		return parseSymbol86(r)
 	case 0x88:
 		return parseSymbol88(r)
 	case 0x8A:
@@ -160,10 +173,18 @@ func parseSymbol(r io.Reader) error {
 		return parseSymbol8C(r)
 	case 0x8E:
 		return parseSymbol8E(r)
+	case 0x90:
+		return parseSymbol90(r)
+	case 0x92:
+		return parseSymbol92(r)
 	case 0x94:
 		return parseSymbol94(r)
 	case 0x96:
 		return parseSymbol96(r)
+	case 0x98:
+		return parseSymbol98(r)
+	case 0x9A:
+		return parseSymbol9A(r)
 	default:
 		panic(fmt.Sprintf("support for symbol kind %02X not yet implemented", kind))
 	}
@@ -206,6 +227,28 @@ func parseSymbol82(r io.Reader) error {
 		return errutil.Err(err)
 	}
 	dbg.Printf("symbol 0x82 data: % X", buf)
+	return nil
+}
+
+// parseSymbol84 parses a debug symbol of kind 0x84.
+func parseSymbol84(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 2)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x84 data: % X", buf)
+	return nil
+}
+
+// parseSymbol86 parses a debug symbol of kind 0x86.
+func parseSymbol86(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 4)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x86 data: % X", buf)
 	return nil
 }
 
@@ -268,6 +311,28 @@ func parseSymbol8E(r io.Reader) error {
 		return errutil.Err(err)
 	}
 	dbg.Printf("symbol 0x8E data: % X", buf)
+	return nil
+}
+
+// parseSymbol90 parses a debug symbol of kind 0x90.
+func parseSymbol90(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 4)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x90 data: % X", buf)
+	return nil
+}
+
+// parseSymbol92 parses a debug symbol of kind 0x92.
+func parseSymbol92(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 4)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x92 data: % X", buf)
 	return nil
 }
 
@@ -484,11 +549,28 @@ func parseSymbol96(r io.Reader) error {
 	return nil
 }
 
+// parseSymbol98 parses a debug symbol of kind 0x98.
+func parseSymbol98(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 8)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x98 data: % X", buf)
+	return nil
+}
+
+// parseSymbol9A parses a debug symbol of kind 0x9A.
+func parseSymbol9A(r io.Reader) error {
+	// nothing to do.
+	return nil
+}
+
 // getNArrays returns the number of arrays contained within the given type.
 func getNArrays(typ uint16) int {
 	n := 0
 	for x := typ >> 4; x != 0; x >>= 2 {
-		// Check if array type (0b11).
+		// Check if array modifier (0b11).
 		if x&0x3 == 0x3 {
 			n++
 		}
