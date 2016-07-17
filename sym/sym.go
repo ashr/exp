@@ -125,11 +125,21 @@ func parseSymbol(r io.Reader) error {
 	}
 	dbg.Printf("kind: %02X", kind)
 
-	// Parse symbol.
+	// Parse symbol based on symbol kind.
+	//
+	//    0x8A = unnamed source file.
 	switch kind {
+	case 0x8A:
+		return parseSymbol8A(r)
 	default:
 		panic(fmt.Sprintf("support for symbol kind %02X not yet implemented", kind))
 	}
 
 	panic("unreachable")
+}
+
+// parseSymbol8A parses a debug symbol of kind 0x8A.
+func parseSymbol8A(r io.Reader) error {
+	// nothing to do.
+	return nil
 }
