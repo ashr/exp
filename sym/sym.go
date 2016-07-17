@@ -134,7 +134,7 @@ func parseSymbol(r io.Reader) error {
 	//    0x86 = ?
 	//    0x88 = named source file.
 	//    0x8A = unnamed source file.
-	//    0x8C = function definition.
+	//    0x8C = named source file; function definition.
 	//    0x8E = ?
 	//    0x90 = ?
 	//    0x92 = ?
@@ -342,6 +342,7 @@ func parseSymbol94(r io.Reader) error {
 	//
 	//    0002 = global variable or function definition.
 	//    0008 = structure field definition.
+	//    0009 = function parameter definition.
 	//    000A = structure type definition.
 	//    000D = type alias definition.
 	//    000F = enum type definition.
