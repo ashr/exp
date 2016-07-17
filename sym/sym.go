@@ -127,8 +127,11 @@ func parseSymbol(r io.Reader) error {
 
 	// Parse symbol based on symbol kind.
 	//
+	//    0x01 = section/segment.
 	//    0x8A = unnamed source file.
 	switch kind {
+	case 0x01:
+		return parseSymbol01(r)
 	case 0x8A:
 		return parseSymbol8A(r)
 	default:
@@ -138,8 +141,31 @@ func parseSymbol(r io.Reader) error {
 	panic("unreachable")
 }
 
+// parseSymbol01 parses a debug symbol of kind 0x01.
+func parseSymbol01(r io.Reader) error {
+	s, err := parseString(r)
+	if err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Println("s:", s)
+	return nil
+}
+
 // parseSymbol8A parses a debug symbol of kind 0x8A.
 func parseSymbol8A(r io.Reader) error {
 	// nothing to do.
 	return nil
+}
+
+// parseString parses and returns a length prefixed string.
+func parseString(r io.Reader) (string, error) {
+	var n uint8
+	if err := binary.Read(r, binary.LittleEndian, &n); err != nil {
+		return "", errutil.Err(err)
+	}
+	buf := make([]byte, n)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return "", errutil.Err(err)
+	}
+	return string(buf), nil
 }
