@@ -125,8 +125,14 @@ func parseSymbol(r io.Reader) error {
 	//
 	//    0x01 = section/segment.
 	//    0x02 = global variable placement (inside section).
+	//    0x80 = ?
+	//    0x82 = ?
+	//    0x88 = named source file.
 	//    0x8A = unnamed source file.
-	//    0x94 = global variable, structure type or structure field definition.
+	//    0x8C = function definition.
+	//    0x8E = ?
+	//    0x94 = global variable, function, enumerable type, enumerable member,
+	//           structure type or structure field definition.
 	//    0x96 = meta symbol; key-value pair.
 	var kind uint8
 
@@ -142,8 +148,18 @@ func parseSymbol(r io.Reader) error {
 		return parseSymbol01(r)
 	case 0x02:
 		return parseSymbol02(r)
+	case 0x80:
+		return parseSymbol80(r)
+	case 0x82:
+		return parseSymbol82(r)
+	case 0x88:
+		return parseSymbol88(r)
 	case 0x8A:
 		return parseSymbol8A(r)
+	case 0x8C:
+		return parseSymbol8C(r)
+	case 0x8E:
+		return parseSymbol8E(r)
 	case 0x94:
 		return parseSymbol94(r)
 	case 0x96:
@@ -176,9 +192,82 @@ func parseSymbol02(r io.Reader) error {
 	return nil
 }
 
+// parseSymbol80 parses a debug symbol of kind 0x80.
+func parseSymbol80(r io.Reader) error {
+	// nothing to do.
+	return nil
+}
+
+// parseSymbol82 parses a debug symbol of kind 0x82.
+func parseSymbol82(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 1)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x82 data: % X", buf)
+	return nil
+}
+
+// parseSymbol88 parses a debug symbol of kind 0x88.
+func parseSymbol88(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 4)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x88 data: % X", buf)
+
+	// Parse source path.
+	path, err := readString(r)
+	if err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Println("path:", path)
+
+	return nil
+}
+
 // parseSymbol8A parses a debug symbol of kind 0x8A.
 func parseSymbol8A(r io.Reader) error {
 	// nothing to do.
+	return nil
+}
+
+// parseSymbol8C parses a debug symbol of kind 0x8C.
+func parseSymbol8C(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 20)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x8C data: % X", buf)
+
+	// Parse source path.
+	path, err := readString(r)
+	if err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Println("path:", path)
+
+	// Parse function name.
+	name, err := readString(r)
+	if err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Println("name:", name)
+
+	return nil
+}
+
+// parseSymbol8E parses a debug symbol of kind 0x8E.
+func parseSymbol8E(r io.Reader) error {
+	// Read unknown data.
+	buf := make([]byte, 4)
+	if _, err := io.ReadFull(r, buf); err != nil {
+		return errutil.Err(err)
+	}
+	dbg.Printf("symbol 0x8E data: % X", buf)
 	return nil
 }
 
@@ -186,7 +275,7 @@ func parseSymbol8A(r io.Reader) error {
 func parseSymbol94(r io.Reader) error {
 	// Definition kind.
 	//
-	//    0002 = global variable definition.
+	//    0002 = global variable or function definition.
 	//    0008 = structure field definition.
 	//    000A = structure type definition.
 	//    000D = type alias definition.
