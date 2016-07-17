@@ -48,6 +48,25 @@ unsigned short * v_001D;
 unsigned int * v_001E;
 unsigned long * v_001F;
 
+// Functions.
+
+long long f_0020() {}
+void f_0021() {}
+char f_0022() {}
+short f_0023() {}
+int f_0024() {}
+long f_0025() {}
+float f_0026() {}
+double f_0027() {}
+struct_type f_0028() {}
+//? f_0029() {}
+enum_type f_002A() {}
+//? f_002B() {}
+unsigned char f_002C() {}
+unsigned short f_002D() {}
+unsigned int f_002E() {}
+unsigned long f_002F() {}
+
 // Arrays.
 
 long long v_0030[1];
