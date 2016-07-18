@@ -12,8 +12,9 @@ PERCENT = %
 
 .SECONDEXPANSION:
 %.sym: $$(filter %/$$(PERCENT).obj, $(OBJ))
-	psylink /g /c /q $^,foo.cpe,$@
-	rm -f foo.cpe
+	psylink /g /c /q $^,$(patsubst %.sym,%.cpe,$@),$@
+	#cpe2x $(patsubst %.sym,%.cpe,$@)
+	#rm -f $(patsubst %.sym,%.cpe,$@)
 
 %.obj: %.s
 	aspsx -q $< -o $@
