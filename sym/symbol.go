@@ -1,10 +1,8 @@
 package sym
 
-// A Symbol represents a debug symbol, and has one of the following underlying
-// types.
-//
-//    *symbol01
-//    ...
+// TODO: Figure out how to access symbol specific data.
+
+// A Symbol represents a debug symbol.
 type Symbol interface {
 	// Offset returns the offset of the symbol.
 	Offset() uint32
@@ -70,7 +68,11 @@ type data8A struct {
 type data8C struct {
 }
 
+// Symbol kind 0x8E represents a line number marker associated with the directly
+// preceding function definition.
 type data8E struct {
+	// Line number.
+	line uint32
 }
 
 type data90 struct {

@@ -113,7 +113,7 @@ func parseSymbol(r io.Reader) (Symbol, error) {
 	//    0x88 = named source file.
 	//    0x8A = unnamed source file.
 	//    0x8C = named source file; function definition.
-	//    0x8E = ?
+	//    0x8E = line number of function definition.
 	//    0x90 = ?
 	//    0x92 = ?
 	//    0x94 = global variable, local variable, function, enumerable type,
@@ -287,13 +287,13 @@ func parseSymbol8C(r io.Reader) (*data8C, error) {
 
 // parseSymbol8E parses a debug symbol of kind 0x8E.
 func parseSymbol8E(r io.Reader) (*data8E, error) {
-	// Read unknown data.
-	buf := make([]byte, 4)
-	if _, err := io.ReadFull(r, buf); err != nil {
+	// Parse object count.
+	var line uint32
+	if err := binary.Read(r, binary.LittleEndian, &line); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x8E data: % X", buf)
-	return &data8E{}, nil
+	dbg.Printf("line: %d", line)
+	return &data8E{line: line}, nil
 }
 
 // parseSymbol90 parses a debug symbol of kind 0x90.
