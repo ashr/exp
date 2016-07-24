@@ -476,61 +476,53 @@ func parseSymbol94(r io.Reader) (*data94, error) {
 
 // parseSymbol96 parses a debug symbol of kind 0x96.
 func parseSymbol96(r io.Reader) (*data96, error) {
-	// Definition kind.
-	//
-	// ref: parseSymbol94.
-	var defKind uint16
-
+	data := new(data96)
 	// Parse definition kind.
-	if err := binary.Read(r, binary.LittleEndian, &defKind); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &data.defKind); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("defKind: %04X", defKind)
-
-	// Type.
-	//
-	// ref: parseSymbol94.
-	var typ uint16
+	dbg.Printf("defKind: %04X", data.defKind)
 
 	// Parse type.
-	if err := binary.Read(r, binary.LittleEndian, &typ); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &data.typ); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("typ: %04X", typ)
+	dbg.Printf("typ: %04X", data.typ)
 
 	// Read unknown data.
-	buf := make([]byte, 6)
-	if _, err := io.ReadFull(r, buf); err != nil {
+	if _, err := io.ReadFull(r, data.unknown[:]); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x96 data: % X", buf)
+	dbg.Printf("symbol 0x96 data: % X", data.unknown[:])
 
 	// Parse array lengths.
-	n := getNArrays(typ)
+	n := getNArrays(data.typ)
 	for i := 0; i < n; i++ {
 		// Parse type.
 		var length uint32
 		if err := binary.Read(r, binary.LittleEndian, &length); err != nil {
 			return nil, errutil.Err(err)
 		}
+		data.lengths = append(data.lengths, length)
 		dbg.Printf("length: %d", length)
 	}
 
 	// Parse key.
-	key, err := readString(r)
+	var err error
+	data.key, err = readString(r)
 	if err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Println("key:", key)
+	dbg.Println("key:", data.key)
 
 	// Parse value.
-	val, err := readString(r)
+	data.val, err = readString(r)
 	if err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Println("val:", val)
+	dbg.Println("val:", data.val)
 
-	return &data96{}, nil
+	return data, nil
 }
 
 // parseSymbol98 parses a debug symbol of kind 0x98.

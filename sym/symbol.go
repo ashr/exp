@@ -84,7 +84,20 @@ type data92 struct {
 type data94 struct {
 }
 
+// Symbol kind 0x96 represents a key-value pair meta-symbol, used to describe
+// end of symbol markers, type aliases, variable definitions of structure,
+// enumerable or array types.
 type data96 struct {
+	// Definition kind.
+	defKind uint16
+	// Type.
+	typ uint16
+	// Unknown data.
+	unknown [6]byte
+	// Array lengths.
+	lengths []uint32
+	// Key-value pair.
+	key, val string
 }
 
 type data98 struct {
