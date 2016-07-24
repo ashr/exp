@@ -14,7 +14,7 @@ PERCENT = %
 %.sym: $$(filter %/$$(PERCENT).obj, $(OBJ))
 	psylink /g /c /q $^,$(patsubst %.sym,%.cpe,$@),$@
 	#cpe2x $(patsubst %.sym,%.cpe,$@)
-	#rm -f $(patsubst %.sym,%.cpe,$@)
+	rm -f $(patsubst %.sym,%.cpe,$@)
 
 %.obj: %.s
 	aspsx -q $< -o $@
@@ -28,7 +28,7 @@ PERCENT = %
 .PHONY: clean ${DIR}
 
 clean:
-	rm -f $(C_PRE) $(ASM) $(OBJ) *.sym
+	rm -f $(C_PRE) $(ASM) $(OBJ) *.cpe *.sym
 
 #CPP_SRC = $(wildcard */*.cpp)
 #CPP_PRE = $(CPP_SRC:.cpp=.pre_cpp)

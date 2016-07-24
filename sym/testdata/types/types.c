@@ -10,6 +10,8 @@ typedef enum enum_name {
 	B = 2,
 } enum_type;
 
+// === [ 000X ] ================================================================
+
 // Basic type                                            xxxx
 //                                     00 00 00 00 00 00
 
@@ -32,6 +34,8 @@ unsigned long v_000F;
 
 // Derived types.
 
+// === [ 001X ] ================================================================
+
 // Basic type                                            xxxx
 //    pointer                                         01
 //                                     00 00 00 00 00
@@ -52,6 +56,8 @@ unsigned char * v_001C;
 unsigned short * v_001D;
 unsigned int * v_001E;
 unsigned long * v_001F;
+
+// === [ 002X ] ================================================================
 
 // Basic type                                            xxxx
 //    function                                        10
@@ -74,6 +80,8 @@ unsigned short f_002D() {}
 unsigned int f_002E() {}
 unsigned long f_002F() {}
 
+// === [ 003X ] ================================================================
+
 // Basic type                                            xxxx
 //    array                                           11
 //                                     00 00 00 00 00
@@ -94,6 +102,19 @@ unsigned char v_003C[1];
 unsigned short v_003D[1];
 unsigned int v_003E[1];
 unsigned long v_003F[1];
+
+// === [ 004X ] ================================================================
+
+// Basic type                                            xxxx
+//    NONE                                            00
+//        pointer                                  01
+//                                     00 00 00 00
+
+// NOTE: Invalid.
+//
+// Type modifier must be specified in the least-significant bits.
+
+// === [ 005X ] ================================================================
 
 // Basic type                                            xxxx
 //    pointer                                         01
@@ -117,6 +138,8 @@ unsigned short ** v_005D;
 unsigned int ** v_005E;
 unsigned long ** v_005F;
 
+// === [ 006X ] ================================================================
+
 // Basic type                                            xxxx
 //    function                                        10
 //        pointer                                  01
@@ -138,6 +161,8 @@ unsigned char * f_006C() {}
 unsigned short * f_006D() {}
 unsigned int * f_006E() {}
 unsigned long * f_006F() {}
+
+// === [ 007X ] ================================================================
 
 // Basic type                                            xxxx
 //    array                                           11
@@ -161,6 +186,19 @@ unsigned short * v_007D[1];
 unsigned int * v_007E[1];
 unsigned long * v_007F[1];
 
+// === [ 008X ] ================================================================
+
+// Basic type                                            xxxx
+//    NONE                                            00
+//        function                                 10
+//                                     00 00 00 00
+
+// NOTE: Invalid.
+//
+// Type modifier must be specified in the least-significant bits.
+
+// === [ 009X ] ================================================================
+
 // Basic type                                            xxxx
 //    pointer                                         01
 //        function                                 10
@@ -183,25 +221,75 @@ unsigned short (*v_009D)();
 unsigned int (*v_009E)();
 unsigned long (*v_009F)();
 
+// === [ 00AX ] ================================================================
+
 // Basic type                                            xxxx
 //    function                                        10
 //        function                                 10
 //                                     00 00 00 00
+
+// NOTE: Invalid.
+//
+// Function returning function not valid in C.
+
+// === [ 00BX ] ================================================================
 
 // Basic type                                            xxxx
 //    array                                           11
 //        function                                 10
 //                                     00 00 00 00
 
+// NOTE: Invalid.
+//
+// Array of functions not valid in C.
+
+// === [ 00CX ] ================================================================
+
+// Basic type                                            xxxx
+//    NONE                                            00
+//        array                                    11
+//                                     00 00 00 00
+
+// NOTE: Invalid.
+//
+// Type modifier must be specified in the least-significant bits.
+
+// === [ 00DX ] ================================================================
+
 // Basic type                                            xxxx
 //    pointer                                         01
 //        array                                    11
 //                                     00 00 00 00
 
+long long (*v_00D0)[1];
+//void (*v_00D1)[1];
+char (*v_00D2)[1];
+short (*v_00D3)[1];
+int (*v_00D4)[1];
+long (*v_00D5)[1];
+float (*v_00D6)[1];
+double (*v_00D7)[1];
+struct_type (*v_00D8)[1];
+//? (*v_00D9)[1];
+enum_type (*v_00DA)[1];
+//? (*v_00DB)[1];
+unsigned char (*v_00DC)[1];
+unsigned short (*v_00DD)[1];
+unsigned int (*v_00DE)[1];
+unsigned long (*v_00DF)[1];
+
+// === [ 00EX ] ================================================================
+
 // Basic type                                            xxxx
 //    function                                        10
 //        array                                    11
 //                                     00 00 00 00
+
+// NOTE: Invalid.
+//
+// Function returning array not valid in C.
+
+// === [ 00FX ] ================================================================
 
 // Basic type                                            xxxx
 //    array                                           11
@@ -225,7 +313,11 @@ unsigned short v_00FD[1][2];
 unsigned int v_00FE[1][2];
 unsigned long v_00FF[1][2];
 
+// === [ ...X ] ================================================================
+
 // etc.
+
+// === [ FFFX ] ================================================================
 
 // Basic type                                            xxxx
 //    array                                           11
