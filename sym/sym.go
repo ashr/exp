@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -17,7 +18,7 @@ import (
 
 // dbg is a logger which prefixes debug messages with the file name and line
 // number of callees.
-var dbg = log.New(os.Stdout, "", log.Lshortfile)
+var dbg = log.New(ioutil.Discard, "", log.Lshortfile)
 
 // TODO: Figure out what the unknown data represents (search for unknown, buf
 // and []byte).
@@ -51,8 +52,8 @@ func Parse(r io.Reader) ([]Symbol, error) {
 	// Parse symbols.
 	var syms []Symbol
 	for i := 0; ; i++ {
-		fmt.Printf("=== [ symbol %d ] ===\n", i)
-		fmt.Println()
+		dbg.Printf("=== [ symbol %d ] ===\n", i)
+		dbg.Println()
 		sym, err := parseSymbol(br)
 		if err != nil {
 			if err == io.EOF {
@@ -62,7 +63,7 @@ func Parse(r io.Reader) ([]Symbol, error) {
 		}
 		syms = append(syms, sym)
 		// TODO: Remove debug output.
-		fmt.Println()
+		dbg.Println()
 	}
 
 	return syms, nil
