@@ -40,7 +40,7 @@ const (
 	DefKind000B         = 0x000B
 	DefKind000C         = 0x000C
 	DefKindTypeAlias    = 0x000D // type alias definition.
-	DefKind000F         = 0x000F // enum type definition?
+	DefKindEnumType     = 0x000F // enum type definition.
 	DefKind0010         = 0x0010 // enum member definition?
 	DefKind0011         = 0x0011
 	DefKind0012         = 0x0012
@@ -66,13 +66,13 @@ func parseFile(path string) error {
 				if sym.HasMod(data.Type, sym.ModFunction) {
 					f := &FuncDecl{
 						Name: data.Name,
-						Type: data.Type,
+						Type: BasicType(data.Type),
 					}
 					// TODO: Merge decls.
 					fs[f.Name] = f
-					pretty.Println("f:", f)
+					pretty.Println("function:", f)
 				} else {
-					global := &Var{Name: data.Name, Type: data.Type}
+					global := &Var{Name: data.Name, Type: BasicType(data.Type)}
 					// TODO: Merge globals.
 					globals[global.Name] = global
 					pretty.Println("global:", global)
@@ -80,24 +80,55 @@ func parseFile(path string) error {
 			case DefKindStructType:
 				typ, n := parseStructType(types, syms[i:])
 				i += n
-				pretty.Println("typ:", typ)
+				pretty.Println("struct typ:", typ)
+				types[typ.TypeName()] = typ
+			case DefKindEnumType:
+				typ, n := parseEnumType(syms[i:])
+				i += n
+				pretty.Println("enum typ:", typ)
 				types[typ.TypeName()] = typ
 			default:
 				panic(fmt.Sprintf("definition kind %04X not yet implemented", data.DefKind))
 			}
 		case *sym.Data96:
 			// Definition.
-			if data.DefKind == DefKindTypeAlias {
+			switch data.DefKind {
+			case DefKindTypeAlias:
 				fmt.Printf("type alias from %q to %q\n", data.Key, data.Val)
 				types[data.Val] = types[data.Key]
-			} else {
-				// TODO: Implement.
+			case DefKindGlobalOrFunc:
+				t, ok := types[data.Key]
+				if !ok {
+					panic("pAng!")
+				}
+				if sym.HasMod(data.Type, sym.ModArray) {
+					t = Array{
+						Elem:    t,
+						Lengths: data.Lengths,
+					}
+				}
+				if sym.HasMod(data.Type, sym.ModFunction) {
+					f := &FuncDecl{
+						Name: data.Val,
+						// TODO: Wrap t to signal that the type is actually a return
+						// type of a function.
+						Type: t,
+					}
+					// TODO: Merge decls.
+					fs[f.Name] = f
+					pretty.Println("function:", f)
+				} else {
+					global := &Var{Name: data.Val, Type: t}
+					// TODO: Merge globals.
+					globals[global.Name] = global
+					pretty.Println("global:", global)
+				}
 			}
 		case *sym.Data8C:
 			// function definition start.
-			f, n := parseFunc(syms[i:])
+			f, n := parseFunc(types, syms[i:])
 			i += n
-			pretty.Println("f:", f)
+			pretty.Println("function:", f)
 			// TODO: Merge decls.
 			fs[f.Name] = f
 		}
@@ -159,20 +190,6 @@ func (typ BasicType) TypeName() string {
 	panic("unreachable")
 }
 
-type EnumType struct {
-	Name    string
-	Members []EnumMember
-}
-
-type EnumMember struct {
-	Name string
-	Val  string
-}
-
-func (typ EnumType) TypeName() string {
-	return typ.Name
-}
-
 type Type interface {
 	TypeName() string
 }
@@ -188,6 +205,49 @@ func (typ Array) TypeName() string {
 		fmt.Fprintf(buf, "[%d]", length)
 	}
 	return fmt.Sprintf("%s%s", typ.Elem, buf)
+}
+
+type EnumType struct {
+	Name    string
+	Members []EnumMember
+}
+
+type EnumMember struct {
+	Name string
+	Val  uint32
+}
+
+func (typ EnumType) TypeName() string {
+	return typ.Name
+}
+
+func parseEnumType(syms []sym.Symbol) (*EnumType, int) {
+	typ := new(EnumType)
+	var n int
+loop:
+	for n = 0; n < len(syms); n++ {
+		s := syms[n]
+		switch data := s.Data().(type) {
+		case *sym.Data94:
+			if n == 0 {
+				// Enum type definition.
+				typ.Name = data.Name
+				continue
+			}
+			member := EnumMember{
+				Name: data.Name,
+				Val:  s.Value(),
+			}
+			typ.Members = append(typ.Members, member)
+		case *sym.Data96:
+			if data.Val == ".eos" {
+				break loop
+			}
+		default:
+			panic(fmt.Sprintf("support for symbol data %T not yet implemented", data))
+		}
+	}
+	return typ, n
 }
 
 func parseStructType(types map[string]Type, syms []sym.Symbol) (*StructType, int) {
@@ -215,6 +275,7 @@ loop:
 			}
 			// Key-value pair.
 			var t Type = BasicType(data.Type)
+			// TODO: Add support for enum.
 			if data.Type&sym.TypeStruct != 0 {
 				t = types[data.Key]
 			}
@@ -242,7 +303,7 @@ type FuncDecl struct {
 	// Filled in by 0x8C.
 	Path string
 	// Placeholder which will be filled by 0x94 symbols.
-	Type sym.Type
+	Type Type
 	// Filled in by 0x94.
 	Params []Var
 	// Filled in by 0x94.
@@ -251,10 +312,10 @@ type FuncDecl struct {
 
 type Var struct {
 	Name string
-	Type sym.Type
+	Type Type
 }
 
-func parseFunc(syms []sym.Symbol) (*FuncDecl, int) {
+func parseFunc(types map[string]Type, syms []sym.Symbol) (*FuncDecl, int) {
 	ended, started := false, false
 	decl := new(FuncDecl)
 	var n int
@@ -285,10 +346,31 @@ loop:
 		case *sym.Data94:
 			switch data.DefKind {
 			case DefKindParam:
-				param := Var{Name: data.Name, Type: data.Type}
+				param := Var{Name: data.Name, Type: BasicType(data.Type)}
 				decl.Params = append(decl.Params, param)
 			case DefKindLocal:
-				local := Var{Name: data.Name, Type: data.Type}
+				local := Var{Name: data.Name, Type: BasicType(data.Type)}
+				decl.Locals = append(decl.Locals, local)
+			default:
+				panic(fmt.Sprintf("support for definition kind %04X not yet implemented", data.DefKind))
+			}
+		case *sym.Data96:
+			t, ok := types[data.Key]
+			if !ok {
+				panic("Silly rabbit, Trix are for kids!")
+			}
+			if sym.HasMod(data.Type, sym.ModArray) {
+				t = Array{
+					Elem:    t,
+					Lengths: data.Lengths,
+				}
+			}
+			switch data.DefKind {
+			case DefKindParam:
+				param := Var{Name: data.Val, Type: t}
+				decl.Params = append(decl.Params, param)
+			case DefKindLocal:
+				local := Var{Name: data.Val, Type: t}
 				decl.Locals = append(decl.Locals, local)
 			default:
 				panic(fmt.Sprintf("support for definition kind %04X not yet implemented", data.DefKind))
