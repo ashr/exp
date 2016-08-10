@@ -28,22 +28,22 @@ const (
 )
 
 const (
-	DefKindLocal        = 0x0001 // local variable definition.
-	DefKindGlobalOrFunc = 0x0002 // global variable or function definition.
-	DefKind0003         = 0x0003
-	DefKind0004         = 0x0004
-	DefKind0006         = 0x0006
-	DefKind0008         = 0x0008 // structure field definition?
-	DefKindParam        = 0x0009 // function parameter definition?
-	DefKindStructType   = 0x000A // structure type definition.
-	DefKind000B         = 0x000B
-	DefKind000C         = 0x000C
-	DefKindTypeAlias    = 0x000D // type alias definition.
-	DefKindEnumType     = 0x000F // enum type definition.
-	DefKind0010         = 0x0010 // enum member definition?
-	DefKind0011         = 0x0011
-	DefKind0012         = 0x0012
-	DefKind0066         = 0x0066 // end of symbol marker?
+	DefKindLocal1        = 0x0001 // local variable definition.
+	DefKindGlobalOrFunc1 = 0x0002 // global variable or function definition.
+	DefKindGlobalOrFunc2 = 0x0003 // global function or function definition.
+	DefKindLocal2        = 0x0004 // local variable definition.
+	DefKind0006          = 0x0006 // error?
+	DefKindStructField1  = 0x0008 // structure field definition.
+	DefKindParam1        = 0x0009 // function parameter definition.
+	DefKindStructType    = 0x000A // structure type definition.
+	DefKindUnionMember   = 0x000B // union member.
+	DefKindUnion         = 0x000C // union.
+	DefKindTypeAlias     = 0x000D // type alias definition.
+	DefKindEnumType      = 0x000F // enum type definition.
+	DefKind0010          = 0x0010 // enum member definition?
+	DefKindParam2        = 0x0011 // function parameter definition.
+	DefKindStructField2  = 0x0012 // structure field definition.
+	DefKind0066          = 0x0066 // end of symbol marker?
 )
 
 var alias = make(map[string]string)
@@ -67,13 +67,26 @@ func parseFile(path string) error {
 		case *sym.Data94:
 			// Definition.
 			switch data.DefKind {
-			case DefKindGlobalOrFunc:
+			case DefKindGlobalOrFunc1, DefKindGlobalOrFunc2:
 				if sym.HasMod(data.Type, sym.ModFunction) {
 					f := &FuncDecl{
 						Name: data.Name,
 						Type: BasicType(data.Type),
 					}
-					// TODO: Merge decls.
+					if old, ok := fs[f.Name]; ok {
+						if len(old.Locals) > len(f.Locals) {
+							f.Locals = old.Locals
+						}
+						if len(old.Params) > len(f.Params) {
+							f.Params = old.Params
+						}
+						if len(old.Path) > len(f.Path) {
+							f.Path = old.Path
+						}
+						if old.Type != nil && f.Type == nil {
+							f.Type = old.Type
+						}
+					}
 					fs[f.Name] = f
 					fOrder = append(fOrder, f.Name)
 					//pretty.Println("function:", f)
@@ -103,14 +116,14 @@ func parseFile(path string) error {
 				if len(data.Key) == 0 {
 					// TODO: Check length 0.
 				}
-				fmt.Printf("type alias from %q to %q\n", data.Key, data.Val)
-				if name, ok := alias[data.Key]; ok {
-					fmt.Printf("##### an alias already exists from %q to %q\n", data.Key, name)
-				}
+				//fmt.Printf("type alias from %q to %q\n", data.Key, data.Val)
+				//if name, ok := alias[data.Key]; ok {
+				//   fmt.Printf("##### an alias already exists from %q to %q\n", data.Key, name)
+				//}
 				alias[data.Key] = data.Val
 				aliasOrder = append(aliasOrder, data.Key)
 				types[data.Val] = types[data.Key]
-			case DefKindGlobalOrFunc:
+			case DefKindGlobalOrFunc1, DefKindGlobalOrFunc2:
 				var t Type = BasicType(data.Type)
 				if data.Type&0x000F == sym.TypeStruct || data.Type&0x000F == sym.TypeEnum {
 					var ok bool
@@ -132,7 +145,20 @@ func parseFile(path string) error {
 						// type of a function.
 						Type: t,
 					}
-					// TODO: Merge decls.
+					if old, ok := fs[f.Name]; ok {
+						if len(old.Locals) > len(f.Locals) {
+							f.Locals = old.Locals
+						}
+						if len(old.Params) > len(f.Params) {
+							f.Params = old.Params
+						}
+						if len(old.Path) > len(f.Path) {
+							f.Path = old.Path
+						}
+						if old.Type != nil && f.Type == nil {
+							f.Type = old.Type
+						}
+					}
 					fs[f.Name] = f
 					fOrder = append(fOrder, f.Name)
 					//pretty.Println("function:", f)
@@ -149,8 +175,22 @@ func parseFile(path string) error {
 			f, n := parseFunc(types, syms[i:])
 			i += n
 			//pretty.Println("function:", f)
-			// TODO: Merge decls.
+			if old, ok := fs[f.Name]; ok {
+				if len(old.Locals) > len(f.Locals) {
+					f.Locals = old.Locals
+				}
+				if len(old.Params) > len(f.Params) {
+					f.Params = old.Params
+				}
+				if len(old.Path) > len(f.Path) {
+					f.Path = old.Path
+				}
+				if old.Type != nil && f.Type == nil {
+					f.Type = old.Type
+				}
+			}
 			fs[f.Name] = f
+			fOrder = append(fOrder, f.Name)
 		}
 	}
 	pretty(fs, globals, types, fOrder, globalOrder, aliasOrder)
@@ -159,22 +199,14 @@ func parseFile(path string) error {
 
 type StructType struct {
 	Name   string
-	Fields []Field
+	Fields []*Var
 }
 
 func (typ StructType) String() string {
 	buf := new(bytes.Buffer)
 	fmt.Fprintln(buf, "typedef struct {")
 	for _, field := range typ.Fields {
-		if t, ok := field.Type.(Array); ok {
-			l := new(bytes.Buffer)
-			for _, length := range t.Lengths {
-				fmt.Fprintf(l, "[%d]", length)
-			}
-			fmt.Fprintf(buf, "\t%s %s%s;\n", t.Elem.TypeName(), field.Name, l)
-			continue
-		}
-		fmt.Fprintf(buf, "\t%s %s;\n", field.Type.TypeName(), field.Name)
+		fmt.Fprintf(buf, "\t%s\n", field)
 	}
 	fmt.Fprintf(buf, "} %s;\n", typ.TypeName())
 	return buf.String()
@@ -186,11 +218,6 @@ func (typ StructType) TypeName() string {
 		panic(fmt.Sprintf("unable to locate struct name %q in alias", typ.Name))
 	}
 	return name
-}
-
-type Field struct {
-	Name string
-	Type Type
 }
 
 type BasicType sym.Type
@@ -346,7 +373,7 @@ loop:
 				typ.Name = data.Name
 				continue
 			}
-			field := Field{
+			field := &Var{
 				Name: data.Name,
 				Type: BasicType(data.Type),
 			}
@@ -378,7 +405,7 @@ loop:
 					Lengths: data.Lengths,
 				}
 			}
-			field := Field{
+			field := &Var{
 				Name: data.Val,
 				Type: t,
 			}
@@ -389,7 +416,7 @@ loop:
 	}
 	if t, ok := types[typ.Name]; ok {
 		if _, isdummy := t.(DummyType); !isdummy {
-			fmt.Printf("#### type of name %q already exists\n", typ.Name)
+			//fmt.Printf("#### type of name %q already exists\n", typ.Name)
 			// TODO: Fix through a serial (use no global map) implementation.
 			//panic(fmt.Sprintf("#### type of name %q already exists and maps to %v; thus cannot add type %v\n", typ.Name, t, typ))
 		}
@@ -418,14 +445,43 @@ type FuncDecl struct {
 	// Placeholder which will be filled by 0x94 symbols.
 	Type Type
 	// Filled in by 0x94.
-	Params []Var
+	Params []*Var
 	// Filled in by 0x94.
-	Locals []Var
+	Locals []*Var
+}
+
+func (f *FuncDecl) String() string {
+	buf := new(bytes.Buffer)
+	paramsBuf := new(bytes.Buffer)
+	for i, param := range f.Params {
+		if i != 0 {
+			paramsBuf.WriteString(", ")
+		}
+		paramsBuf.WriteString(param.String())
+	}
+	fmt.Fprintf(buf, "%s %s(%s) {\n", f.Type.TypeName(), f.Name, paramsBuf)
+	for _, local := range f.Locals {
+		_ = local
+		fmt.Fprintf(buf, "\t%s;\n", local)
+	}
+	buf.WriteString("}")
+	return buf.String()
 }
 
 type Var struct {
 	Name string
 	Type Type
+}
+
+func (v *Var) String() string {
+	if t, ok := v.Type.(Array); ok {
+		buf := new(bytes.Buffer)
+		for _, length := range t.Lengths {
+			fmt.Fprintf(buf, "[%d]", length)
+		}
+		return fmt.Sprintf("%s %s%s", t.Elem.TypeName(), v.Name, buf)
+	}
+	return fmt.Sprintf("%s %s", v.Type.TypeName(), v.Name)
 }
 
 func parseFunc(types map[string]Type, syms []sym.Symbol) (*FuncDecl, int) {
@@ -439,8 +495,12 @@ loop:
 		// Definition of a function, struct, variable, parameter or union.
 		case *sym.Data8C:
 			// Function start.
-			decl.Name = data.Name
-			decl.Path = data.Path
+			if n == 0 {
+				decl.Name = data.Name
+				decl.Path = data.Path
+				continue
+			}
+			panic("wat?")
 		case *sym.Data8E:
 			// Function end.
 			break loop
@@ -460,11 +520,11 @@ loop:
 			ended = true
 		case *sym.Data94:
 			switch data.DefKind {
-			case DefKindParam:
-				param := Var{Name: data.Name, Type: BasicType(data.Type)}
+			case DefKindParam1, DefKindParam2:
+				param := &Var{Name: data.Name, Type: BasicType(data.Type)}
 				decl.Params = append(decl.Params, param)
-			case DefKindLocal:
-				local := Var{Name: data.Name, Type: BasicType(data.Type)}
+			case DefKindLocal1, DefKindLocal2:
+				local := &Var{Name: data.Name, Type: BasicType(data.Type)}
 				decl.Locals = append(decl.Locals, local)
 			default:
 				// TODO: Implement.
@@ -488,11 +548,11 @@ loop:
 				}
 			}
 			switch data.DefKind {
-			case DefKindParam:
-				param := Var{Name: data.Val, Type: t}
+			case DefKindParam1, DefKindParam2:
+				param := &Var{Name: data.Val, Type: t}
 				decl.Params = append(decl.Params, param)
-			case DefKindLocal:
-				local := Var{Name: data.Val, Type: t}
+			case DefKindLocal1, DefKindLocal2:
+				local := &Var{Name: data.Val, Type: t}
 				decl.Locals = append(decl.Locals, local)
 			default:
 				// TODO: Implement.

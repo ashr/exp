@@ -330,12 +330,19 @@ func parseSymbol94(r io.Reader) (*Data94, error) {
 	//
 	//    0001 = local variable definition.
 	//    0002 = global variable or function definition.
+	//    0003 = global variable or function definition.
+	//	   0004 = ?
+	//	   0006 = ?
 	//    0008 = structure field definition.
 	//    0009 = function parameter definition.
 	//    000A = structure type definition.
+	//	   000B = ?
+	//	   000C = ?
 	//    000D = type alias definition.
 	//    000F = enum type definition.
 	//    0010 = enum member definition.
+	//	   0011 = ?
+	//	   0012 = ?
 	//    0066 = end of symbol marker.
 
 	// Parse definition kind.
