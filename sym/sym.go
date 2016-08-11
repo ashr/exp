@@ -52,9 +52,7 @@ func Parse(r io.Reader) ([]Symbol, error) {
 	// Parse symbols.
 	var syms []Symbol
 	for i := 0; ; i++ {
-		dbg.Printf("=== [ symbol %d ] ===\n", i)
-		dbg.Println()
-		sym, err := parseSymbol(br)
+		sym, err := parseSymbol(br, i)
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -62,8 +60,6 @@ func Parse(r io.Reader) ([]Symbol, error) {
 			return nil, errutil.Err(err)
 		}
 		syms = append(syms, sym)
-		// TODO: Remove debug output.
-		dbg.Println()
 	}
 
 	return syms, nil
@@ -92,7 +88,7 @@ func parseHeader(r io.Reader) error {
 }
 
 // parseSymbol parses a debug symbol of the given PS1 symbol file.
-func parseSymbol(r io.Reader) (Symbol, error) {
+func parseSymbol(r io.Reader, i int) (Symbol, error) {
 	// Parse symbol value.
 	var value uint32
 	if err := binary.Read(r, binary.LittleEndian, &value); err != nil {
@@ -101,7 +97,6 @@ func parseSymbol(r io.Reader) (Symbol, error) {
 		}
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("value: %08X", value)
 
 	// Symbol kind.
 	//
@@ -130,7 +125,16 @@ func parseSymbol(r io.Reader) (Symbol, error) {
 	if err := binary.Read(r, binary.LittleEndian, &kind); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("kind: %02X", kind)
+	switch kind {
+	case 0x80, 0x82, 0x86, 0x98:
+		// ignore.
+	default:
+		dbg.Println()
+		dbg.Printf("=== [ symbol %d ] ===\n", i)
+		dbg.Println()
+		dbg.Printf("value: %08X", value)
+		dbg.Printf("kind: %02X", kind)
+	}
 
 	// Parse symbol based on symbol kind.
 	var data interface{}
@@ -211,7 +215,7 @@ func parseSymbol82(r io.Reader) (*Data82, error) {
 	if _, err := io.ReadFull(r, buf); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x82 data: % X", buf)
+	//dbg.Printf("symbol 0x82 data: % X", buf)
 	return &Data82{}, nil
 }
 
@@ -222,7 +226,7 @@ func parseSymbol84(r io.Reader) (*Data84, error) {
 	if _, err := io.ReadFull(r, buf); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x84 data: % X", buf)
+	dbg.Printf("data: % X", buf)
 	return &Data84{}, nil
 }
 
@@ -233,7 +237,7 @@ func parseSymbol86(r io.Reader) (*Data86, error) {
 	if _, err := io.ReadFull(r, buf); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x86 data: % X", buf)
+	//dbg.Printf("symbol 0x86 data: % X", buf)
 	return &Data86{}, nil
 }
 
@@ -270,7 +274,7 @@ func parseSymbol8C(r io.Reader) (*Data8C, error) {
 	if _, err := io.ReadFull(r, data.Unknown[:]); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x8C data: % X", data.Unknown[:])
+	dbg.Printf("data: % X", data.Unknown[:])
 
 	// Parse source path.
 	path, err := readString(r)
@@ -309,7 +313,7 @@ func parseSymbol90(r io.Reader) (*Data90, error) {
 	if _, err := io.ReadFull(r, buf); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x90 data: % X", buf)
+	dbg.Printf("data: % X", buf)
 	return &Data90{}, nil
 }
 
@@ -320,31 +324,12 @@ func parseSymbol92(r io.Reader) (*Data92, error) {
 	if _, err := io.ReadFull(r, buf); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x92 data: % X", buf)
+	dbg.Printf("data: % X", buf)
 	return &Data92{}, nil
 }
 
 // parseSymbol94 parses a debug symbol of kind 0x94.
 func parseSymbol94(r io.Reader) (*Data94, error) {
-	// Definition kind.
-	//
-	//    0001 = local variable definition.
-	//    0002 = global variable or function definition.
-	//    0003 = global variable or function definition.
-	//	   0004 = ?
-	//	   0006 = ?
-	//    0008 = structure field definition.
-	//    0009 = function parameter definition.
-	//    000A = structure type definition.
-	//	   000B = ?
-	//	   000C = ?
-	//    000D = type alias definition.
-	//    000F = enum type definition.
-	//    0010 = enum member definition.
-	//	   0011 = ?
-	//	   0012 = ?
-	//    0066 = end of symbol marker.
-
 	// Parse definition kind.
 	data := new(Data94)
 	if err := binary.Read(r, binary.LittleEndian, &data.DefKind); err != nil {
@@ -473,7 +458,7 @@ func parseSymbol94(r io.Reader) (*Data94, error) {
 	if _, err := io.ReadFull(r, data.Unknown[:]); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x94 data: % X", data.Unknown[:])
+	dbg.Printf("data: % X", data.Unknown[:])
 
 	// Parse identifier name.
 	name, err := readString(r)
@@ -505,7 +490,7 @@ func parseSymbol96(r io.Reader) (*Data96, error) {
 	if _, err := io.ReadFull(r, data.Unknown[:]); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x96 data: % X", data.Unknown[:])
+	dbg.Printf("data: % X", data.Unknown[:])
 
 	// Parse array lengths.
 	n := getNArrays(data.Type)
@@ -544,7 +529,7 @@ func parseSymbol98(r io.Reader) (*Data98, error) {
 	if _, err := io.ReadFull(r, buf); err != nil {
 		return nil, errutil.Err(err)
 	}
-	dbg.Printf("symbol 0x98 data: % X", buf)
+	//dbg.Printf("symbol 0x98 data: % X", buf)
 	return &Data98{}, nil
 }
 

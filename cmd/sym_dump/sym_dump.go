@@ -193,7 +193,7 @@ func parseFile(path string) error {
 			fOrder = append(fOrder, f.Name)
 		}
 	}
-	pretty(fs, globals, types, fOrder, globalOrder, aliasOrder)
+	//pretty(fs, globals, types, fOrder, globalOrder, aliasOrder)
 	return nil
 }
 

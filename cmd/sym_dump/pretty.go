@@ -9,13 +9,11 @@ import (
 )
 
 func pretty(fs map[string]*FuncDecl, globals map[string]*Var, types map[string]Type, fOrder, globalOrder, aliasOrder []string) {
-	/*
-		for _, name := range aliasOrder {
-			typeName := alias[name]
-			t := types[typeName]
-			fmt.Println(t)
-		}
-	*/
+	for _, name := range aliasOrder {
+		typeName := alias[name]
+		t := types[typeName]
+		fmt.Println(t)
+	}
 
 	/*
 		for _, name := range globalOrder {
