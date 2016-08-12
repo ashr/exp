@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/sanctuary/exp/sym"
 )
@@ -138,7 +140,7 @@ func (t *PointerType) Equal(u Type) bool {
 
 // Name returns the name of the definition.
 func (typ *PointerType) Name() string {
-	return fmt.Sprintf("*%s", typ.elem.Name())
+	return fmt.Sprintf("%s*", typ.elem.Name())
 }
 
 // An ArrayType represents an array type.
@@ -193,6 +195,16 @@ func (typ *EnumType) Name() string {
 	return typ.name
 }
 
+func (typ *EnumType) String() string {
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "typedef enum %s {\n", typ.name)
+	for _, member := range typ.members {
+		fmt.Fprintf(buf, "\t%s = %d,\n", member.name, member.val)
+	}
+	fmt.Fprintf(buf, "}") // TODO: Print sorted type aliases.
+	return buf.String()
+}
+
 // An EnumMember represents an enum member.
 type EnumMember struct {
 	// Enum name.
@@ -207,32 +219,58 @@ type StructType struct {
 	name string
 	// Structure fields.
 	fields []*StructField
+	// Struct only contains partial information.
+	partial bool
 }
 
 // Equal reports whether t and u are of equal types.
 func (t *StructType) Equal(u Type) bool {
 	if u, ok := u.(*StructType); ok {
-		if t.name != u.name {
-			return false
-		}
-		if len(t.fields) != len(u.fields) {
-			return false
-		}
-		for i := range t.fields {
-			if t.fields[i].name != u.fields[i].name {
-				return false
-			}
-			if !t.fields[i].typ.Equal(u.fields[i].typ) {
-				return false
-			}
-		}
+		// HACK, but works.
+		return t.String() == u.String()
 	}
-	return true
+	return false
+	// NOTE: The out-commented version may be prettier, but gets stuck in an
+	// infinite loop for self-referential types; e.g.
+	//
+	//    typedef struct Foo {
+	//       Foo *next;
+	//    };
+	//
+	/*
+		if u, ok := u.(*StructType); ok {
+			if t.name != u.name {
+				return false
+			}
+			if len(t.fields) != len(u.fields) {
+				return false
+			}
+			for i := range t.fields {
+				if t.fields[i].name != u.fields[i].name {
+					return false
+				}
+				if !t.fields[i].typ.Equal(u.fields[i].typ) {
+					return false
+				}
+			}
+		}
+		return true
+	*/
 }
 
 // Name returns the name of the definition.
 func (typ *StructType) Name() string {
 	return typ.name
+}
+
+func (typ *StructType) String() string {
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "typedef struct %s {\n", typ.name)
+	for _, field := range typ.fields {
+		fmt.Fprintf(buf, "\t%s;\n", field)
+	}
+	fmt.Fprintf(buf, "}") // TODO: Print sorted type aliases.
+	return buf.String()
 }
 
 // A StructField represents a structure field.
@@ -246,4 +284,14 @@ type StructField struct {
 // Name returns the name of the definition.
 func (f *StructField) Name() string {
 	return f.name
+}
+
+func (f *StructField) String() string {
+	t := f.typ.Name()
+	var array string
+	if pos := strings.Index(t, "["); pos != -1 {
+		array = t[pos:]
+		t = t[:pos]
+	}
+	return fmt.Sprintf("%s %s%s", t, f.name, array)
 }

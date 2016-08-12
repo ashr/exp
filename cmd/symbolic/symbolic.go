@@ -26,16 +26,6 @@ func main() {
 	}
 }
 
-/*
-// types map from type name to list of types of said name, including the symbol
-// position at which the type was defined.
-var types map[string][]struct {
-	// Symbol position.
-	pos int
-	typ Type
-}
-*/
-
 // parseFile parses the given Playstation 1 symbol file.
 func parseFile(path string) ([]*File, error) {
 	syms, err := sym.ParseFile(path)
@@ -79,37 +69,59 @@ func parseFile(path string) ([]*File, error) {
 					typ := &EnumType{
 						name: data.Name,
 					}
+					//old, ok := types[typ.name]
+					types[typ.name] = typ
 					n := parseEnumType(typ, syms[i+1:])
 					i += n + 1
-					if old, ok := types[typ.name]; ok {
-						pretty.Println("old type:", old)
-						pretty.Println("new type:", typ)
-					}
-					types[typ.name] = typ
+					//if ok {
+					//	if !old.Equal(typ) {
+					//		if old, ok := old.(*StructType); !ok || !old.partial {
+					//			fmt.Println("old type:", old)
+					//			fmt.Println("new type:", typ)
+					//		}
+					//	}
+					//}
 				case DefKindStructType:
 					typ := &StructType{
 						name: data.Name,
 					}
-					n, partial := parseStructType(typ, types, syms[i+1:])
+					//old, ok := types[typ.name]
+					types[typ.name] = typ
+					n := parseStructType(typ, types, syms[i+1:])
 					i += n + 1
-					if partial {
+					//if ok {
+					//	if !old.Equal(typ) {
+					//		if old, ok := old.(*StructType); !ok || !old.partial {
+					//			// NOTE: The MonsterStruct structure differs on the
+					//			// following field:
+					//			//
+					//			//    -unsigned char unpackfilesize;
+					//			//    +unsigned char packsize;
+					//			//
+					//			fmt.Println("old type:", old)
+					//			fmt.Println("new type:", typ)
+					//		}
+					//	}
+					//}
+					if typ.partial {
 						retry = true
+						//delete(types, typ.name) // TODO: Remove?
 						continue
 					}
-					if old, ok := types[typ.name]; ok {
-						pretty.Println("old type:", old)
-						pretty.Println("new type:", typ)
-					}
-					types[typ.name] = typ
 				}
 			}
 		}
 		if !retry {
 			break
 		}
-		panic("retrying")
+		retry = false
 	}
-	pretty.Println(types)
+
+	for _, typ := range types {
+		fmt.Println(typ)
+	}
+
+	return nil, nil
 
 	// TODO: alias.
 	//case DefKindTypeAlias:
@@ -136,7 +148,7 @@ func parseFile(path string) ([]*File, error) {
 
 // parseStructType parses a structure type definition from the stream of
 // symbols.
-func parseStructType(typ *StructType, types map[string]Type, syms []sym.Symbol) (n int, partial bool) {
+func parseStructType(typ *StructType, types map[string]Type, syms []sym.Symbol) int {
 	for i := 0; i < len(syms); i++ {
 		s := syms[i]
 		switch data := s.Data().(type) {
@@ -164,8 +176,16 @@ func parseStructType(typ *StructType, types map[string]Type, syms []sym.Symbol) 
 					var ok bool
 					t, ok = types[data.Key]
 					if !ok {
-						partial = true
-						continue
+						if data.Key == "__vtbl_ptr_type" {
+							tt := &StructType{
+								name: "__vtbl_ptr_type",
+							}
+							types[tt.name] = tt
+							t = tt
+						} else {
+							typ.partial = true
+							continue
+						}
 					}
 				default:
 					t = &BasicType{
@@ -180,7 +200,7 @@ func parseStructType(typ *StructType, types map[string]Type, syms []sym.Symbol) 
 				typ.fields = append(typ.fields, field)
 			case DefKindEOS:
 				// End of symbol.
-				return i, partial
+				return i
 			default:
 				panic(fmt.Sprintf("expected DefKindStructField1, DefKindStructField2 or DefKindEOS, got %v", data.DefKind))
 			}
@@ -260,19 +280,7 @@ type File struct {
 	// Types.
 	//
 	// TODO: Sort by name.
-	structTypes []*StructType
-	// Types.
-	//
-	// TODO: Sort by name.
-	enumTypes []*EnumType
-	// Types.
-	//
-	// TODO: Sort by name.
-	basicTypes []*BasicType
-	// Types.
-	//
-	// TODO: Sort by name.
-	arrayTypes []*ArrayType
+	types []Type
 }
 
 // insertFunc inserts the given function into the list of source files based on
