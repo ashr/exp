@@ -156,7 +156,7 @@ func (t Type) String() string {
 }
 
 const (
-	TypeError         = 0x0 // error
+	TypeUnknown       = 0x0 // unknown
 	TypeVoid          = 0x1 // void
 	TypeChar          = 0x2 // char
 	TypeShort         = 0x3 // short
@@ -220,8 +220,8 @@ func modString(mod uint16) string {
 // basicString returns the string representation of the givne basic type.
 func basicString(basic uint16) string {
 	switch basic {
-	case TypeError:
-		return "error"
+	case TypeUnknown:
+		return "unknown"
 	case TypeVoid:
 		return "void"
 	case TypeChar:
