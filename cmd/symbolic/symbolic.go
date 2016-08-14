@@ -62,6 +62,7 @@ func parseFile(path string) ([]*File, error) {
 	var structOrder []string
 	structOrder = append(structOrder, "__vtbl_ptr_type")
 	structOrder = append(structOrder, "t11TLinkedList1Z8PalEntry")
+	structOrder = append(structOrder, "TP_LINK")
 	for {
 		for i := 0; i < len(syms); i++ {
 			s := syms[i]
@@ -160,6 +161,16 @@ func parseFile(path string) ([]*File, error) {
 						retry = true
 						continue
 					}
+					insert := true
+					for _, key := range structOrder {
+						if key == typ.name {
+							insert = false
+							break
+						}
+					}
+					if insert {
+						structOrder = append(structOrder, typ.name)
+					}
 				}
 			}
 		}
@@ -199,18 +210,14 @@ func parseFile(path string) ([]*File, error) {
 	// Print type definitions.
 	var enums []string
 	var basics []string
-	var structs []string
-	var unions []string
 	for key, typ := range types {
 		switch typ.(type) {
 		case *EnumType:
 			enums = append(enums, key)
 		case *BasicType, *PointerType, *ArrayType, *FuncType:
 			basics = append(basics, key)
-		case *StructType:
-			structs = append(structs, key)
-		case *UnionType:
-			unions = append(unions, key)
+		case *StructType, *UnionType:
+			// Handled by structOrder.
 		default:
 			panic(fmt.Sprintf("support for type %T not yet implemented", typ))
 		}
@@ -218,8 +225,6 @@ func parseFile(path string) ([]*File, error) {
 	sort.Strings(enums)
 	sort.Strings(basics)
 	basics = append([]string{"unknown"}, basics...)
-	sort.Strings(structs)
-	sort.Strings(unions)
 
 	// Print enums.
 	for _, name := range enums {
@@ -245,22 +250,14 @@ func parseFile(path string) ([]*File, error) {
 		fmt.Println()
 	}
 
-	// Print unions.
-	for _, name := range unions {
-		typ := types[name]
-		switch typ := typ.(type) {
-		case *UnionType:
-			fmt.Println(typ.TypeDef())
-		}
-		fmt.Println()
-	}
-
-	// Print structs.
+	// Print structs and unions.
 	for _, name := range structOrder {
 		typ := types[name]
 		switch typ := typ.(type) {
 		case *StructType:
 			fmt.Println(typ.TypeDef())
+			//case *UnionType:
+			//	fmt.Println(typ.TypeDef())
 		}
 		fmt.Println()
 	}

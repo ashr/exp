@@ -410,6 +410,17 @@ func (f *StructField) String() string {
 		}
 	}
 	isStruct := containsStructType(f.typ)
+	if typ, ok := f.typ.(*UnionType); ok {
+		if strings.HasPrefix(t, ".") && strings.HasSuffix(t, "fake") {
+			buf := new(bytes.Buffer)
+			fmt.Fprintf(buf, "union {\n")
+			for _, member := range typ.members {
+				fmt.Fprintf(buf, "\t\t%s;\n", member)
+			}
+			fmt.Fprintf(buf, "\t}")
+			t = buf.String()
+		}
+	}
 	if isStruct {
 		t = fmt.Sprintf("struct %s", t)
 	}
