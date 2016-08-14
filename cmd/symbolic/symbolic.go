@@ -190,18 +190,35 @@ func parseFile(path string) ([]*File, error) {
 		case *sym.Data96:
 			switch data.DefKind {
 			case DefKindTypeAlias:
-				typ := types[data.Key]
-				switch typ := typ.(type) {
-				case *EnumType:
-					typ.aliases = append(typ.aliases, data.Val)
-				case *StructType:
-					typ.aliases = append(typ.aliases, data.Val)
-				case nil:
-					log.Println("Unable to find mapping for:")
-					log.Println("   key:", data.Key)
-					log.Println("   val:", data.Val)
+				switch data.Type & 0x000F {
+				case sym.TypeStruct, sym.TypeEnum:
+					typ := types[data.Key]
+					switch typ := typ.(type) {
+					case *EnumType:
+						typ.aliases = append(typ.aliases, data.Val)
+					case *StructType:
+						typ.aliases = append(typ.aliases, data.Val)
+					case nil:
+						log.Println("Unable to find mapping for:")
+						log.Println("   key:", data.Key)
+						log.Println("   val:", data.Val)
+					default:
+						panic(fmt.Sprintf("support for type aliases on type %T not yet implemented", typ))
+					}
 				default:
-					panic(fmt.Sprintf("support for type aliases on type %T not yet implemented", typ))
+					// Type alias for basic type.
+					var typ Type = &BasicType{
+						basic: data.Type & 0x000F,
+					}
+					typ = parseTypeMods(typ, data.Type&0xFFF0, data.Lengths)
+					old, ok := types[data.Val]
+					if ok {
+						if !old.Equal(typ) {
+							fmt.Println("old type:", old.Name())
+							fmt.Println("new type:", typ.Name())
+						}
+					}
+					types[data.Val] = typ
 				}
 			}
 		}
@@ -242,8 +259,11 @@ func parseFile(path string) ([]*File, error) {
 	for _, name := range basics {
 		typ := types[name]
 		switch typ := typ.(type) {
-		case *BasicType, *PointerType, *ArrayType:
+		case *BasicType, *PointerType:
 			fmt.Printf("typedef %s %s;\n", typ.Name(), name)
+		case *ArrayType:
+			// TODO: Add support for nested arrays.
+			fmt.Printf("typedef %s %s[%d];\n", typ.elem.Name(), name, typ.length)
 		case *FuncType:
 			fmt.Printf("typedef %s %s();", typ.ret.Name(), name)
 		}
