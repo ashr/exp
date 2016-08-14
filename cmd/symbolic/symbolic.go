@@ -183,6 +183,8 @@ func parseFile(path string) ([]*File, error) {
 		basic: sym.TypeInt,
 	}
 
+	// TODO: Alias BLOCKENTRYPTR should be pointer to struct.
+
 	// Parse type aliases.
 	for i := 0; i < len(syms); i++ {
 		s := syms[i]

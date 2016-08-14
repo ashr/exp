@@ -421,6 +421,9 @@ func (f *StructField) String() string {
 			t = buf.String()
 		}
 	}
+	if _, isEnum := f.typ.(*EnumType); isEnum {
+		t = fmt.Sprintf("enum %s", t)
+	}
 	if isStruct {
 		t = fmt.Sprintf("struct %s", t)
 	}
