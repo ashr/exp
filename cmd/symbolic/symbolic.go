@@ -195,11 +195,14 @@ func parseFile(path string) ([]*File, error) {
 				switch data.Type & 0x000F {
 				case sym.TypeStruct, sym.TypeEnum:
 					typ := types[data.Key]
+					typ = parseTypeMods(typ, data.Type&0xFFF0, data.Lengths)
 					switch typ := typ.(type) {
 					case *EnumType:
 						typ.aliases = append(typ.aliases, data.Val)
 					case *StructType:
 						typ.aliases = append(typ.aliases, data.Val)
+					case *PointerType:
+						types[data.Val] = typ
 					case nil:
 						log.Println("Unable to find mapping for:")
 						log.Println("   key:", data.Key)
@@ -261,8 +264,23 @@ func parseFile(path string) ([]*File, error) {
 	for _, name := range basics {
 		typ := types[name]
 		switch typ := typ.(type) {
-		case *BasicType, *PointerType:
+		case *BasicType:
 			fmt.Printf("typedef %s %s;\n", typ.Name(), name)
+		case *PointerType:
+			switch elem := typ.elem.(type) {
+			case *StructType:
+				fmt.Printf("typedef struct %s %s;\n", typ.Name(), name)
+			case *FuncType:
+				if ret, ok := elem.ret.(*PointerType); ok {
+					if e, ok := ret.elem.(*StructType); ok {
+						fmt.Printf("typedef struct %s* (*%s);\n", e.Name(), name)
+						continue
+					}
+				}
+				fmt.Printf("typedef %s (*%s);\n", elem.ret.Name(), name)
+			default:
+				fmt.Printf("typedef %s %s;\n", typ.Name(), name)
+			}
 		case *ArrayType:
 			// TODO: Add support for nested arrays.
 			fmt.Printf("typedef %s %s[%d];\n", typ.elem.Name(), name, typ.length)
