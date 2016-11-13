@@ -46,6 +46,11 @@ const (
 	DefKind0066          = 0x0066 // end of symbol marker?
 )
 
+type Global struct {
+	Addr uint32
+	*Var
+}
+
 var alias = make(map[string]string)
 
 // parseFile parses the given Playstation 1 symbol file.
@@ -57,7 +62,7 @@ func parseFile(path string) error {
 	fOrder := []string{}
 	fs := make(map[string]*FuncDecl)
 	globalOrder := []string{}
-	globals := make(map[string]*Var)
+	globals := make(map[string]*Global)
 	types := make(map[string]Type)
 
 	aliasOrder := []string{}
@@ -91,7 +96,7 @@ func parseFile(path string) error {
 					fOrder = append(fOrder, f.Name)
 					//pretty.Println("function:", f)
 				} else {
-					global := &Var{Name: data.Name, Type: BasicType(data.Type)}
+					global := &Global{Addr: s.Value(), Var: &Var{Name: data.Name, Type: BasicType(data.Type)}}
 					// TODO: Merge globals.
 					globals[global.Name] = global
 					globalOrder = append(globalOrder, global.Name)
@@ -163,7 +168,7 @@ func parseFile(path string) error {
 					fOrder = append(fOrder, f.Name)
 					//pretty.Println("function:", f)
 				} else {
-					global := &Var{Name: data.Val, Type: t}
+					global := &Global{Addr: s.Value(), Var: &Var{Name: data.Val, Type: t}}
 					// TODO: Merge globals.
 					globals[global.Name] = global
 					globalOrder = append(globalOrder, global.Name)
@@ -193,7 +198,7 @@ func parseFile(path string) error {
 			fOrder = append(fOrder, f.Name)
 		}
 	}
-	//pretty(fs, globals, types, fOrder, globalOrder, aliasOrder)
+	pretty(fs, globals, types, fOrder, globalOrder, aliasOrder)
 	return nil
 }
 
@@ -232,8 +237,8 @@ func (typ BasicType) TypeName() string {
 	}
 	buf := new(bytes.Buffer)
 	switch typ & 0x000F {
-	case sym.TypeError:
-		buf.WriteString("error")
+	case sym.TypeUnknown:
+		buf.WriteString("unknown")
 	case sym.TypeVoid:
 		buf.WriteString("void")
 	case sym.TypeChar:
