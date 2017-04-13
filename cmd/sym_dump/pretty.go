@@ -10,11 +10,11 @@ import (
 
 func pretty(fs map[string]*FuncDecl, globals map[string]*Global, types map[string]Type, fOrder, globalOrder, aliasOrder []string) {
 	/*
-	for _, name := range aliasOrder {
-		typeName := alias[name]
-		t := types[typeName]
-		fmt.Println(t)
-	}
+		for _, name := range aliasOrder {
+			typeName := alias[name]
+			t := types[typeName]
+			fmt.Println(t)
+		}
 	*/
 
 	// Globals.
@@ -23,8 +23,6 @@ func pretty(fs map[string]*FuncDecl, globals map[string]*Global, types map[strin
 		fmt.Printf("// Address: 0x%08X\n", global.Addr)
 		fmt.Printf("%s;\n", global.Var)
 	}
-
-	return
 
 	if err := os.MkdirAll("_dump_", 0755); err != nil {
 		log.Fatal(err)
