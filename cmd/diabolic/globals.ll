@@ -1,3 +1,10 @@
+%panel_button = type {i32, i32, i32, i32, i32}
+
+; used by 0x404C00
+@mouse_x       = global i32 zeroinitializer,                 !addr !{!"0x525604"}
+@mouse_y       = global i32 zeroinitializer,                 !addr !{!"0x525600"}
+@panel_buttons = global [8 x %panel_button] zeroinitializer, !addr !{!"0x483C54"}
+
 ; used by 0x404C74
 @automap_enabled = global i1 zeroinitializer, !addr !{!"0x4B7E48"}
 @dlvl            = global i8 zeroinitializer, !addr !{!"0x5BB1EE"}

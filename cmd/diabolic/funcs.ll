@@ -1,4 +1,6 @@
 declare !addr !{!"0x401EF4"}                void @automap_show()
+declare !addr !{!"0x404BEB"} x86_fastcallcc void @control_press_panel_button(i32 %panel_button_id)
+declare !addr !{!"0x404C00"}                void @control_check_panel_button_press()
 declare !addr !{!"0x405181"}                void @control_cleanup()
 declare !addr !{!"0x417518"} x86_fastcallcc void @engine_set_seed(i32 %seed)
 declare !addr !{!"0x41752C"}                i32 @engine_rand()
