@@ -1,5 +1,11 @@
 %panel_button = type {i32, i32, i32, i32, i32}
 
+; used by 0x401005
+@_crt_inf            = global i32 zeroinitializer, !addr !{!"0x479400"}
+@_crt_cpp_init_value = global i32 zeroinitializer, !addr !{!"0x4B7930"}
+
+
+
 ; used by 0x404C00
 @mouse_x       = global i32 zeroinitializer,                 !addr !{!"0x525604"}
 @mouse_y       = global i32 zeroinitializer,                 !addr !{!"0x525600"}
