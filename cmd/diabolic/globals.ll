@@ -1,10 +1,88 @@
+%struct.HWND__ = type { i32 }
+%struct.tagPALETTEENTRY = type { i8, i8, i8, i8 }
+%struct.EncData = type { i32, i8, i8, i16, [1 x i8] }
+%struct.Item = type { i32, i16, [2 x i8], i32, i32, i32, i32, i8*, i32, i32, i32, i32, i32, i32, [3 x i8], i32, i32, i32, [64 x i8], [64 x i8], i8, i8, i8, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i8, i32, [2 x i8], i32, i32, i32, i32, i32, i32, i8, i8, [2 x i8], i32, i32, i32, i32, i8, i8, i8, i8, i32, i32, i32 }
+%struct.HINSTANCE__ = type { i32 }
+%struct._GUID = type { i32, i16, i16, [8 x i8] }
+%struct.IDirectDraw = type { %struct.IDirectDrawVtbl* }
+%struct.IDirectDrawVtbl = type { i32 (%struct.IDirectDrawVtbl*, %struct._GUID*, i8**)*, i32 (%struct.IDirectDrawVtbl*)*, i32 (%struct.IDirectDrawVtbl*)*, i32 (%struct.IDirectDrawVtbl*)*, i32 (%struct.IDirectDrawVtbl*, i32, %struct.IDirectDrawClipper**, %struct.IUnknown*)*, i32 (%struct.IDirectDrawVtbl*, i32, %struct.tagPALETTEENTRY*, %struct.IDirectDrawPalette**, %struct.IUnknown*)*, i32 (%struct.IDirectDrawVtbl*, %struct._DDSURFACEDESC*, %struct.IDirectDrawSurfaceVtbl**, %struct.IUnknown*)*, i32 (%struct.IDirectDrawVtbl*, %struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawSurfaceVtbl**)*, i32 (%struct.IDirectDrawVtbl*, i32, %struct._DDSURFACEDESC*, i8*, i32 (%struct._DDSURFACEDESC*, i8*)*)*, i32 (%struct.IDirectDrawVtbl*, i32, %struct._DDSURFACEDESC*, i8*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDSURFACEDESC*, i8*)*)*, i32 (%struct.IDirectDrawVtbl*)*, i32 (%struct.IDirectDrawVtbl*, %struct._DDCAPS*, %struct._DDCAPS*)*, i32 (%struct.IDirectDrawVtbl*, %struct._DDSURFACEDESC*)*, i32 (%struct.IDirectDrawVtbl*, i32*, i32*)*, i32 (%struct.IDirectDrawVtbl*, %struct.IDirectDrawSurfaceVtbl**)*, i32 (%struct.IDirectDrawVtbl*, i32*)*, i32 (%struct.IDirectDrawVtbl*, i32*)*, i32 (%struct.IDirectDrawVtbl*, i32*)*, i32 (%struct.IDirectDrawVtbl*, %struct._GUID*)*, i32 (%struct.IDirectDrawVtbl*)*, i32 (%struct.IDirectDrawVtbl*, %struct.HWND__*, i32)*, i32 (%struct.IDirectDrawVtbl*, i32, i32, i32)*, i32 (%struct.IDirectDrawVtbl*, i32, i8*)* }
+%struct.IDirectDrawClipper = type { %struct.IDirectDrawClipperVtbl* }
+%struct.IDirectDrawClipperVtbl = type opaque
+%struct.IUnknown = type { %struct.IUnknownVtbl* }
+%struct.IUnknownVtbl = type { i32 (%struct.IUnknown*, %struct._GUID*, i8**)*, i32 (%struct.IUnknown*)*, i32 (%struct.IUnknown*)* }
+%struct.IDirectDrawPalette = type { %struct.IDirectDrawPaletteVtbl* }
+%struct.IDirectDrawPaletteVtbl = type { i32 (%struct.IDirectDrawPalette*, %struct._GUID*, i8**)*, i32 (%struct.IDirectDrawPalette*)*, i32 (%struct.IDirectDrawPalette*)*, i32 (%struct.IDirectDrawPalette*, i32*)*, i32 (%struct.IDirectDrawPalette*, i32, i32, i32, %struct.tagPALETTEENTRY*)*, i32 (%struct.IDirectDrawPalette*, %struct.IDirectDrawVtbl*, i32, %struct.tagPALETTEENTRY*)*, i32 (%struct.IDirectDrawPalette*, i32, i32, i32, %struct.tagPALETTEENTRY*)* }
+%struct._DDSURFACEDESC = type { i32, i32, i32, i32, %union.anon, i32, %union.anon.0, i32, i32, i8*, %struct._DDCOLORKEY, %struct._DDCOLORKEY, %struct._DDCOLORKEY, %struct._DDCOLORKEY, %struct._DDPIXELFORMAT, %struct._DDSCAPS }
+%union.anon = type { i32 }
+%union.anon.0 = type { i32 }
+%struct._DDCOLORKEY = type { i32, i32 }
+%struct._DDPIXELFORMAT = type { i32, i32, i32, %union.anon.1, %union.anon.2, %union.anon.3, %union.anon.4, %union.anon.5 }
+%union.anon.1 = type { i32 }
+%union.anon.2 = type { i32 }
+%union.anon.3 = type { i32 }
+%union.anon.4 = type { i32 }
+%union.anon.5 = type { i32 }
+%struct._DDSCAPS = type { i32 }
+%struct.IDirectDrawSurfaceVtbl = type { i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._GUID*, i8**)*, i32 (%struct.IDirectDrawSurfaceVtbl*)*, i32 (%struct.IDirectDrawSurfaceVtbl*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawSurfaceVtbl*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, %struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, i32, %struct._DDBLTFX*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDBLTBATCH*, i32, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, i32, %struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, %struct.IDirectDrawSurfaceVtbl*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i8*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDSURFACEDESC*, i8*)*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, i8*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDSURFACEDESC*, i8*)*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawSurfaceVtbl*, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDSCAPS*, %struct.IDirectDrawSurfaceVtbl**)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDSCAPS*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawClipper**)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, %struct._DDCOLORKEY*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.HDC__**)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32*, i32*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawPalette**)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDPIXELFORMAT*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct._DDSURFACEDESC*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawVtbl*, %struct._DDSURFACEDESC*)*, i32 (%struct.IDirectDrawSurfaceVtbl*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, %struct._DDSURFACEDESC*, i32, i8*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.HDC__*)*, i32 (%struct.IDirectDrawSurfaceVtbl*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawClipper*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, %struct._DDCOLORKEY*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.IDirectDrawPalette*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i8*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, %struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, i32, %struct._DDOVERLAYFX*)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32)*, i32 (%struct.IDirectDrawSurfaceVtbl*, i32, %struct.IDirectDrawSurfaceVtbl*)* }
+%struct.tagRECT = type { i32, i32, i32, i32 }
+%struct._DDBLTFX = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, %union.anon.6, i32, %union.anon.7, i32, i32, i32, i32, %union.anon.8, i32, %union.anon.9, %union.anon.10, %struct._DDCOLORKEY, %struct._DDCOLORKEY }
+%union.anon.6 = type { i32 }
+%union.anon.7 = type { i32 }
+%union.anon.8 = type { i32 }
+%union.anon.9 = type { i32 }
+%union.anon.10 = type { i32 }
+%struct._DDBLTBATCH = type { %struct.tagRECT*, %struct.IDirectDrawSurfaceVtbl*, %struct.tagRECT*, i32, %struct._DDBLTFX* }
+%struct.HDC__ = type { i32 }
+%struct._DDOVERLAYFX = type { i32, i32, i32, i32, i32, %union.anon.11, i32, %union.anon.12, %struct._DDCOLORKEY, %struct._DDCOLORKEY, i32, i32 }
+%union.anon.11 = type { i32 }
+%union.anon.12 = type { i32 }
+%struct._DDCAPS = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, [8 x i32], %struct._DDSCAPS, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, [8 x i32], i32, i32, i32, [8 x i32], i32, i32, i32, [8 x i32], i32, i32, i32, i32, i32, i32, i32, [8 x i32] }
+%struct.SfxData = type { i32, i8*, %struct.SoundFile* }
+%struct.SoundFile = type { [20 x i8], i32, i32, i8*, %struct.IDirectSoundBufferVtbl**, i32 }
+%struct.IDirectSoundBufferVtbl = type { i32 (%struct.IDirectSoundBufferVtbl*, %struct._GUID*, i8**)*, i32 (%struct.IDirectSoundBufferVtbl*)*, i32 (%struct.IDirectSoundBufferVtbl*)*, i32 (%struct.IDirectSoundBufferVtbl*, %struct._DSBCAPS*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32*, i32*)*, i32 (%struct.IDirectSoundBufferVtbl*, %struct.tWAVEFORMATEX*, i32, i32*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32*)*, i32 (%struct.IDirectSoundBufferVtbl*, %struct.IDirectSound*, %struct._DSBUFFERDESC*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32, i32, i8**, i32*, i8**, i32*, i32)*, i32 (%struct.IDirectSoundBufferVtbl*, i32, i32, i32)*, i32 (%struct.IDirectSoundBufferVtbl*, i32)*, i32 (%struct.IDirectSoundBufferVtbl*, %struct.tWAVEFORMATEX*)*, i32 (%struct.IDirectSoundBufferVtbl*, i32)*, i32 (%struct.IDirectSoundBufferVtbl*, i32)*, i32 (%struct.IDirectSoundBufferVtbl*, i32)*, i32 (%struct.IDirectSoundBufferVtbl*)*, i32 (%struct.IDirectSoundBufferVtbl*, i8*, i32, i8*, i32)*, i32 (%struct.IDirectSoundBufferVtbl*)* }
+%struct._DSBCAPS = type { i32, i32, i32, i32, i32 }
+%struct.tWAVEFORMATEX = type { i16, i16, i32, i32, i16, i16, i16 }
+%struct.IDirectSound = type { %struct.IDirectSoundVtbl* }
+%struct.IDirectSoundVtbl = type { i32 (%struct.IDirectSound*, %struct._GUID*, i8**)*, i32 (%struct.IDirectSound*)*, i32 (%struct.IDirectSound*)*, i32 (%struct.IDirectSound*, %struct._DSBUFFERDESC*, %struct.IDirectSoundBuffer**, %struct.IUnknown*)*, i32 (%struct.IDirectSound*, %struct._DSCAPS*)*, i32 (%struct.IDirectSound*, %struct.IDirectSoundBuffer*, %struct.IDirectSoundBuffer**)*, i32 (%struct.IDirectSound*, %struct.HWND__*, i32)*, i32 (%struct.IDirectSound*)*, i32 (%struct.IDirectSound*, i32*)*, i32 (%struct.IDirectSound*, i32)*, i32 (%struct.IDirectSound*, %struct._GUID*)* }
+%struct.IDirectSoundBuffer = type { %struct.IDirectSoundBufferVtbl* }
+%struct._DSCAPS = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
+%struct._DSBUFFERDESC = type { i32, i32, i32, i32, %struct.tWAVEFORMATEX* }
+%struct._EXCEPTION_POINTERS = type { %struct._EXCEPTION_RECORD*, %struct._CONTEXT* }
+%struct._EXCEPTION_RECORD = type { i32, i32, %struct._EXCEPTION_RECORD*, i8*, i32, [15 x i32] }
+%struct._CONTEXT = type { i32, i32, i32, i32, i32, i32, i32, %struct._FLOATING_SAVE_AREA, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, [512 x i8] }
+%struct._FLOATING_SAVE_AREA = type { i32, i32, i32, i32, i32, i32, i32, [80 x i8], i32 }
+%struct.Range_i8 = type { %struct.Coord_i8, %struct.Coord_i8 }
+%struct.Coord_i8 = type { i8, i8 }
+%struct.MenuItem = type { i32, i8*, void (i32)* }
+%struct.Player = type { i32, [25 x i8], i32, i32, i32, [8 x i8], i32, i32, i32, i32, i32, i32, i32, [8 x i8], i32, i32, i32, i32, [8 x i8], i32, i32, i32, i32, i32, i32, i32, i32, i32, [12 x i8], i32, i32, i8, i32, i8, i32, i32, [8 x i8], [64 x i8], [2 x i32], [2 x i32], [2 x i32], i8, i32, i32, i32, [8 x i8], i32, i8, i32, i8, i8, [32 x i8], i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i8, i8, i32, i32, i32, i8, i8, i8, i8, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, [17 x i32], [6 x i32], [13 x i8], i32, [8 x i8*], i32, i32, [8 x i8*], i32, i32, [8 x i8*], i32, i32, i32, [8 x i8*], [8 x i8*], [8 x i8*], i32, i32, i32, [8 x i8*], i32, i32, [8 x i8*], i32, i32, [8 x i8*], i32, i32, [7 x %struct.Item], [40 x %struct.Item], i32, [40 x i8], [8 x %struct.Item], %struct.Item, [4 x i8], i32, i32, i32, i32, i32, i32, [2 x i32], i32, i8, i8, [10 x i8], i32, i32, i32, i32, i8, i8, i8, i8, i8, i8, i8, i8, i16, i16, i16, i16, i16, i16, i16, i16, i32, i32, i32, i32, i32, i32, i32, i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, [3 x i8], i8 }
+%struct.ChatCmd = type { i32, [2 x %struct.ServerCommand*] }
+%struct.ServerCommand = type { i32, i32, [128 x i8] }
+%struct.Packet = type { %struct.PacketHeader, [493 x i8] }
+%struct.PacketHeader = type { i8, i8, i8, i8, i32, i32, i8, i8, i8, i16, i16 }
+%struct.Event = type { i32, i32, i8*, i32 }
+%struct.ClientInfo = type { i32, i8*, i8*, i32, i32, [4 x i8], i32, i32*, i32, [4 x i8], i32, [12 x i8], i32 }
+%struct.UserInfo = type { i32, [11 x i8], i8 }
+%struct.UiInfo = type { i32, %struct.HWND__*, i32, i32, i32, i32, i32, i32, [4 x i8], i32, i32, [8 x i8], i32, i32, i32, i32, i32 }
+%struct.Hero = type { [8 x i8], i8, i8, i8, i8, i8, i8, i8, i8, [32 x i8], i8, i8, i8, i8, i8, i8, i8, i32, i32, i32, i32, i32, i32, [37 x i8], [2 x i32], [6 x %struct.HeroItem], [19 x i8], [39 x %struct.HeroItem], [19 x i8], [40 x i8], i8, [7 x %struct.HeroItem], [22 x i8], i8, i8, [19 x i8], i32, [27 x i8], i8 }
+%struct.HeroItem = type { i32, i16, i16, i8, i8, i8, i8, i8, i16, i32 }
+%struct.PathStep = type { i8, i8, i8, i32, i32, i8*, i32, [28 x i8], %struct.PathStep* }
+%struct.HeroInfo = type { i8, [16 x i8], i16, i8, i8, i16, i16, i16, i16, i32, i32, i32 }
+%struct.SHA1Context = type { [5 x i32], [2 x i32], [64 x i8] }
+%struct.Tile = type { i16, i16, i16, i16 }
+%struct.IDirectDrawSurface = type { %struct.IDirectDrawSurfaceVtbl* }
+%struct.FileInfo = type { i32, i8*, i8*, i8*, i8* }
+%struct.Caps = type { i32, [4 x i8], i32, [4 x i8], i32, i32, [4 x i8], i32, i32 }
+%struct._finddata_t = type { i32, i32, i32, i32, i32, [260 x i8] }
+%struct._FILETIME = type { i32, i32 }
+%struct._SECURITY_ATTRIBUTES = type { i32, i8*, i32 }
+%struct.type_info = type opaque
+%struct._iobuf = type { i8*, i32, i8*, i32, i32, i32, i32, i8* }
+
 %panel_button = type {i32, i32, i32, i32, i32}
 
 ; used by 0x401005
 @_crt_inf            = global i32 zeroinitializer, !addr !{!"0x479400"}
 @_crt_cpp_init_value = global i32 zeroinitializer, !addr !{!"0x4B7930"}
-
-
 
 ; used by 0x404C00
 @mouse_x       = global i32 zeroinitializer,                 !addr !{!"0x525604"}
@@ -12,9 +90,9 @@
 @panel_buttons = global [8 x %panel_button] zeroinitializer, !addr !{!"0x483C54"}
 
 ; used by 0x404C74
-@automap_enabled = global i1 zeroinitializer, !addr !{!"0x4B7E48"}
-@dlvl            = global i8 zeroinitializer, !addr !{!"0x5BB1EE"}
-@max_players     = global i8 zeroinitializer, !addr !{!"0x679660"}
+@automap_enabled = global i32 zeroinitializer, !addr !{!"0x4B7E48"}
+@dlvl            = global i8  zeroinitializer, !addr !{!"0x5BB1EE"}
+@max_players     = global i8  zeroinitializer, !addr !{!"0x679660"}
 
 ; used by 0x405181
 @duricons_cel                = global i8* zeroinitializer, !addr !{!"0x4B84D0"}
@@ -35,6 +113,41 @@
 @quest_cel                   = global i8* zeroinitializer, !addr !{!"0x69BD08"}
 
 ; used by 0x417518
-@dword_52B974 = global i32 zeroinitializer, !addr !{!"0x52B974"}
-@seed         = global i32 zeroinitializer, !addr !{!"0x52B97C"}
-@seed_count   = global i32 zeroinitializer, !addr !{!"0x52B998"}
+@dword_52B974      = global i32 zeroinitializer, !addr !{!"0x52B974"}
+@seed              = global i32 zeroinitializer, !addr !{!"0x52B97C"}
+@seed_count        = global i32 zeroinitializer, !addr !{!"0x52B998"}
+@cleanup_thread_id = global i32 zeroinitializer, !addr !{!"0x4B7A38"}
+
+@hWnd                  = global i32 zeroinitializer,        !addr !{!"0x525518"}
+@terminating           = global i32 zeroinitializer,        !addr !{!"0x4B7A34"}
+@error_buf             = global [256 x i8] zeroinitializer, !addr !{!"0x4B7934"}
+@hInstance             = global i32 zeroinitializer,        !addr !{!"0x5256EC"}
+@automap_zoom_level    = global i32 zeroinitializer,        !addr !{!"0x4B84AC"}
+@automap_zoom_x_or_y   = global i32 zeroinitializer,        !addr !{!"0x4B84B0"}
+@automap_zoom_y_or_x   = global i32 zeroinitializer,        !addr !{!"0x4B84B4"}
+@automap_zoom_32       = global i32 zeroinitializer,        !addr !{!"0x4B84B8"}
+@automap_zoom_16       = global i32 zeroinitializer,        !addr !{!"0x4B84BC"}
+@automap_zoom_8        = global i32 zeroinitializer,        !addr !{!"0x4B84C0"}
+@automap_zoom_4        = global i32 zeroinitializer,        !addr !{!"0x4B84C4"}
+@automap_zoom_2        = global i32 zeroinitializer,        !addr !{!"0x4B84C8"}
+@dtype                 = global i32 zeroinitializer,        !addr !{!"0x5BB1ED"}
+@screen_buf            = global i8* zeroinitializer,        !addr !{!"0x52A524"}
+@screen_buf_end        = global i8* zeroinitializer,        !addr !{!"0x69CF0C"}
+@view_col              = global i8* zeroinitializer,        !addr !{!"0x5CF33C"}
+@view_row              = global i8* zeroinitializer,        !addr !{!"0x5CF340"}
+@byte_4B7E40           = global [4 x i8] zeroinitializer,   !addr !{!"0x4B7E40"}
+@dword_4B7E44          = global i32 zeroinitializer,        !addr !{!"0x4B7E44"}
+@dword_5BDAFC          = global i32 zeroinitializer,        !addr !{!"0x5BDAFC"}
+@dword_5BDAF8          = global i32 zeroinitializer,        !addr !{!"0x5BDAF8"}
+@inventory_open        = global i32 zeroinitializer,        !addr !{!"0x634CB8"}
+@spellbook_open        = global i32 zeroinitializer,        !addr !{!"0x4B8968"}
+@character_screen_open = global i32 zeroinitializer,        !addr !{!"0x4B896C"}
+@quest_log_open        = global i32 zeroinitializer,        !addr !{!"0x69BD04"}
+@player_own_num        = global i32 zeroinitializer,        !addr !{!"0x686444"}
+@game_pass             = global [128 x i8] zeroinitializer, !addr !{!"0x6771C4"}
+@is_quest_level        = global i8 zeroinitializer,         !addr !{!"0x5CF31D"}
+@quest_level           = global i8 zeroinitializer,         !addr !{!"0x5CCB10"}
+
+@DDP                   = global %struct.IDirectDrawPaletteVtbl* zeroinitializer, !addr !{!"0x52A51C"}
+
+@items                 = global [127 x %struct.Item] zeroinitializer, !addr !{!"0x635A28"}

@@ -1,0 +1,22 @@
+{
+	"0x4010AB": {"args": {"1": {"Mem.offset": "-1"}}},
+	"0x4019DE": {"regs": {"ESI": {"addr": "0x479148"}}},
+	"0x4019ED": {"regs": {"EDI": {"addr": "0x479144"}}},
+	"0x4019F9": {"regs": {"ESI": {"addr": "0x479148"}}},
+	"0x401A1E": {"regs": {"EDI": {"addr": "0x479144"}}},
+	"0x401AE3": {"regs": {"EBX": {"addr": "0x479090"}}},
+	"0x401AED": {"regs": {"EBX": {"addr": "0x479090"}}},
+	"0x401D27": {"regs": {"ESI": {"addr": "0x479388"}}},
+	"0x401D5B": {"regs": {"ESI": {"addr": "0x479388"}}},
+	"0x40315C": {"regs": {"ECX": {"addr": "0x52A51C"}}},
+	"0x4031FC": {"regs": {"ECX": {"addr": "0x52A51C"}}},
+	"0x4034D1": {"regs": {"ESI": {"addr": "0x52A51C"}}},
+	"0x46A22D": {"regs": {"EAX": {"min": "1", "max": "3"}}},
+	"0x46A234": {"regs": {"ECX": {"min": "-4", "max": "-1"}}},
+	"0x46A3A2": {"regs": {"ECX": {"min": "-7", "max": "0"}}},
+	"0x46A3BD": {"regs": {"EAX": {"min": "1", "max": "3"}}},
+	"0x46B2BD": {"regs": {"EAX": {"min": "1", "max": "3"}}},
+	"0x46B2C4": {"regs": {"ECX": {"min": "-4", "max": "-1"}}},
+	"0x46B432": {"regs": {"ECX": {"min": "-7", "max": "0"}}},
+	"0x46B44D": {"regs": {"EAX": {"min": "1", "max": "3"}}}
+}

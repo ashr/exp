@@ -161,7 +161,7 @@
 	},
 	"0x403294": {
 		"name": "capture_403294",
-		"sig": "int __thiscall\tcapture_403294(HANDLE hFile)"
+		"sig": "BOOL __fastcall capture_403294(HANDLE hFile, int a2)"
 	},
 	"0x4032FD": {
 		"name": "capture_write_pcx_pixels",
@@ -177,7 +177,7 @@
 	},
 	"0x403470": {
 		"name": "capture_set_red_palette",
-		"sig": "void __thiscall capture_set_red_palette(PALETTEENTRY *palette_orig)"
+		"sig": "void __fastcall capture_set_red_palette(PALETTEENTRY *palette_orig)"
 	},
 	"0x4034D9": {
 		"name": "codec_decode",
@@ -537,7 +537,7 @@
 	},
 	"0x4088E2": {
 		"name": "diablo_event_loop",
-		"sig": "void __thiscall diablo_event_loop(int interface_mode)"
+		"sig": "void __fastcall diablo_event_loop(int interface_mode)"
 	},
 	"0x408A8C": {
 		"name": "diablo_init_game",
@@ -565,7 +565,7 @@
 	},
 	"0x408DB1": {
 		"name": "diablo_408DB1",
-		"sig": "int __thiscall\tdiablo_408DB1(LPCSTR lpClassName)"
+		"sig": "HWND __fastcall diablo_408DB1(LPCSTR lpClassName)"
 	},
 	"0x408DF4": {
 		"name": "diablo_reload_process",
@@ -577,7 +577,7 @@
 	},
 	"0x40905E": {
 		"name": "diablo_40905E",
-		"sig": "int __stdcall diablo_40905E(HWND hWnd,\tint, int, int)"
+		"sig": "LRESULT __stdcall diablo_40905E(HWND hWnd, int\tMsg, int wParam, int lParam)"
 	},
 	"0x409131": {
 		"name": "diablo_game_proc",
@@ -1473,11 +1473,11 @@
 	},
 	"0x41609D": {
 		"name": "encrypt_41609D",
-		"sig": "int __thiscall\tencrypt_41609D(void *)"
+		"sig": "unsigned int __fastcall encrypt_41609D(void *a1, unsigned int a2)"
 	},
 	"0x416133": {
 		"name": "encrypt_416133",
-		"sig": "int __cdecl encrypt_416133(void *, int, int)"
+		"sig": "size_t\t__cdecl\tencrypt_416133(void *a1, int a2, int a3)"
 	},
 	"0x416167": {
 		"name": "encrypt_416167",
@@ -1485,7 +1485,7 @@
 	},
 	"0x41618E": {
 		"name": "encrypt_41618E",
-		"sig": "int __thiscall\tencrypt_41618E(void *, int)"
+		"sig": "void __fastcall encrypt_41618E(void *a1, int a2, int size)"
 	},
 	"0x4161FC": {
 		"name": "j_engine_cpp_init_1",
@@ -1749,27 +1749,27 @@
 	},
 	"0x418455": {
 		"name": "exception_418455",
-		"sig": "int __fastcall\texception_418455(char)"
+		"sig": "void __fastcall exception_418455(int a1, unsigned int a2)"
 	},
 	"0x418518": {
 		"name": "exception_418518",
-		"sig": "int __fastcall\texception_418518(LPCVOID lpAddress, LPSTR lpString1, int iMaxLength, int, int)"
+		"sig": "int *__fastcall exception_418518(LPCVOID lpAddress, LPSTR lpString1, int iMaxLength, int a4, int a5)"
 	},
 	"0x4185FF": {
 		"name": "exception_4185FF",
-		"sig": "int __fastcall\texception_4185FF(char, LPVOID lp)"
+		"sig": "void __fastcall exception_4185FF(int a1, LPVOID lp)"
 	},
 	"0x418688": {
 		"name": "exception_418688",
-		"sig": "int __fastcall\texception_418688(DWORD dwMessageId, LPSTR lpString1, DWORD nSize)"
+		"sig": "CHAR *__fastcall exception_418688(DWORD dwMessageId, LPSTR lpString1, DWORD nSize)"
 	},
 	"0x41883C": {
 		"name": "exception_filter_create",
-		"sig": ""
+		"sig": "void __fastcall exception_filter_create(void *this)"
 	},
 	"0x418853": {
 		"name": "exception_filter_destroy",
-		"sig": "void __thiscall exception_filter_destroy(void *unused)"
+		"sig": "void __fastcall exception_filter_destroy(void *unused)"
 	},
 	"0x418860": {
 		"name": "exception_get_exception_filter",
@@ -2013,7 +2013,7 @@
 	},
 	"0x41A3D2": {
 		"name": "gmenu_41A3D2",
-		"sig": "bool __fastcall gmenu_41A3D2(int *a1)"
+		"sig": "bool32_t __fastcall gmenu_41A3D2(int *a1)"
 	},
 	"0x41A401": {
 		"name": "gmenu_41A401",
@@ -2081,7 +2081,7 @@
 	},
 	"0x41AA2C": {
 		"name": "init_disable_screensaver",
-		"sig": "void __fastcall init_disable_screensaver(bool disable)"
+		"sig": "void __fastcall init_disable_screensaver(bool32_t disable)"
 	},
 	"0x41AAC5": {
 		"name": "init_main_window",
@@ -2497,7 +2497,7 @@
 	},
 	"0x422024": {
 		"name": "items_setup_all_items",
-		"sig": "int __stdcall items_setup_all_items(int, int, int, char *, int, int)"
+		"sig": "void __fastcall items_setup_all_items(int ii, int idx,\tint seed, int lvl, int uper, int onlygood, int recreate, int pregen)"
 	},
 	"0x42217A": {
 		"name": "items_drop_item_from_monster",
@@ -2521,7 +2521,7 @@
 	},
 	"0x4224A6": {
 		"name": "items_4224A6",
-		"sig": "int __stdcall items_4224A6(char *, int, int, int, int)"
+		"sig": "void __fastcall items_4224A6(int a1, int a2, char *a3,\tint a4,\tint a5,\tint a6,\tint a7)"
 	},
 	"0x42254A": {
 		"name": "items_recreate_item",
@@ -2601,7 +2601,7 @@
 	},
 	"0x42358C": {
 		"name": "items_draw_text",
-		"sig": "int __stdcall items_draw_text(int, char *, int)"
+		"sig": "int __fastcall\titems_draw_text(int a1,\tint a2,\tint a3,\tchar *a4, int a5)"
 	},
 	"0x42365B": {
 		"name": "items_42365B",
@@ -3069,7 +3069,7 @@
 	},
 	"0x427FFA": {
 		"name": "mainmenu_start_game",
-		"sig": "bool32_t __thiscall mainmenu_start_game(int option)"
+		"sig": "bool32_t __fastcall mainmenu_start_game(int option)"
 	},
 	"0x428030": {
 		"name": "mainmenu_start_multi_game",
@@ -3805,7 +3805,7 @@
 	},
 	"0x433A4C": {
 		"name": "monster_433A4C",
-		"sig": "int __userpurge monster_433A4C@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "void __fastcall monster_433A4C(int arglist, int a2, int a3)"
 	},
 	"0x433BCC": {
 		"name": "monster_kill",
@@ -3825,11 +3825,11 @@
 	},
 	"0x4340E0": {
 		"name": "monster_4340E0",
-		"sig": "int __userpurge monster_4340E0@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "uint32_t *__fastcall monster_4340E0(int arglist, int a2, int a3)"
 	},
 	"0x4341AD": {
 		"name": "monster_4341AD",
-		"sig": "int __userpurge monster_4341AD@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "int __fastcall\tmonster_4341AD(int arglist, int\ta2, int\ta3)"
 	},
 	"0x434272": {
 		"name": "monster_434272",
@@ -3861,7 +3861,7 @@
 	},
 	"0x43482C": {
 		"name": "monster_43482C",
-		"sig": "int __userpurge monster_43482C@\u003ceax\u003e(char arglist@\u003ccl\u003e, int, int, int)"
+		"sig": "void __fastcall monster_43482C(int arglist, unsigned int a2, int a3, int a4, int a5)"
 	},
 	"0x434C3B": {
 		"name": "monster_434C3B",
@@ -3957,7 +3957,7 @@
 	},
 	"0x435FDB": {
 		"name": "monster_435FDB",
-		"sig": "int __userpurge monster_435FDB@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "int __fastcall\tmonster_435FDB(int arglist, int\ta2, int\ta3)"
 	},
 	"0x4360B1": {
 		"name": "monster_AI_zombie",
@@ -4013,7 +4013,7 @@
 	},
 	"0x437528": {
 		"name": "monster_AI_range",
-		"sig": "int __userpurge monster_AI_range@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "void __fastcall monster_AI_range(int arglist, int a2, int a3)"
 	},
 	"0x4376B3": {
 		"name": "monster_AI_goat_man_archer",
@@ -4037,7 +4037,7 @@
 	},
 	"0x437A8B": {
 		"name": "monster_437A8B",
-		"sig": "int __userpurge monster_437A8B@\u003ceax\u003e(char arglist@\u003ccl\u003e, int, int, int)"
+		"sig": "void __fastcall monster_437A8B(int arglist, int a2, int a3, int a4, int a5)"
 	},
 	"0x437D93": {
 		"name": "monster_AI_magma_demon",
@@ -4057,7 +4057,7 @@
 	},
 	"0x437DCF": {
 		"name": "monster_437DCF",
-		"sig": "int __userpurge monster_437DCF@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "void __fastcall monster_437DCF(int arglist, int a2, int a3)"
 	},
 	"0x4380DE": {
 		"name": "monster_AI_balrog",
@@ -4161,7 +4161,7 @@
 	},
 	"0x43A1C1": {
 		"name": "monster_43A1C1",
-		"sig": "int __userpurge monster_43A1C1@\u003ceax\u003e(char arglist@\u003ccl\u003e, int)"
+		"sig": "char __fastcall monster_43A1C1(int arglist, int a2, int arglista)"
 	},
 	"0x43A45E": {
 		"name": "monster_is_valid_path",
@@ -4205,7 +4205,7 @@
 	},
 	"0x43AADA": {
 		"name": "monster_43AADA",
-		"sig": "int __userpurge monster_43AADA@\u003ceax\u003e(char arglist@\u003ccl\u003e, int, int)"
+		"sig": "void __fastcall monster_43AADA(int arglist, int a2, int a3, int a4)"
 	},
 	"0x43AC0C": {
 		"name": "monster_43AC0C",
@@ -4253,7 +4253,7 @@
 	},
 	"0x43AEDC": {
 		"name": "mpqapi_43AEDC",
-		"sig": "int __thiscall\tmpqapi_43AEDC(LPCSTR lpFileName)"
+		"sig": "void __fastcall mpqapi_43AEDC(LPCSTR lpFileName, int a2)"
 	},
 	"0x43AF4F": {
 		"name": "mpqapi_video_player_reg_load",
@@ -4301,11 +4301,11 @@
 	},
 	"0x43B23D": {
 		"name": "mpqapi_43B23D",
-		"sig": "int __userpurge mpqapi_43B23D@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint)"
+		"sig": "int __fastcall\tmpqapi_43B23D(int arglist, int a2, int a3)"
 	},
 	"0x43B317": {
 		"name": "mpqapi_43B317",
-		"sig": "int __thiscall\tmpqapi_43B317(char *, DWORD NumberOfBytesWritten, LPCVOID lpBuffer)"
+		"sig": "int __fastcall\tmpqapi_43B317(char *a1,\tchar *a2, DWORD\tNumberOfBytesWritten, LPCVOID lpBuffer)"
 	},
 	"0x43B51C": {
 		"name": "mpqapi_43B51C",
@@ -4325,7 +4325,7 @@
 	},
 	"0x43B791": {
 		"name": "mpqapi_43B791",
-		"sig": "int __thiscall\tmpqapi_43B791(void *)"
+		"sig": "int __fastcall\tmpqapi_43B791(void *a1,\tDWORD *a2)"
 	},
 	"0x43B882": {
 		"name": "mpqapi_close_archive",
@@ -4333,11 +4333,11 @@
 	},
 	"0x43B8FD": {
 		"name": "mpqapi_43B8FD",
-		"sig": "int __thiscall\tmpqapi_43B8FD(LPCSTR lpFileName)"
+		"sig": "void __fastcall mpqapi_43B8FD(LPCSTR lpFileName, int a2)"
 	},
 	"0x43B970": {
 		"name": "mpqapi_43B970",
-		"sig": "int __thiscall\tmpqapi_43B970(LPCSTR lpFileName, int)"
+		"sig": "int __fastcall\tmpqapi_43B970(LPCSTR lpFileName, int a2, int a3)"
 	},
 	"0x43B9CA": {
 		"name": "mpqapi_43B9CA",
@@ -4401,11 +4401,11 @@
 	},
 	"0x43BF2B": {
 		"name": "msg_43BF2B",
-		"sig": "int __fastcall\tmsg_43BF2B(void\t*, void\t*)"
+		"sig": "BYTE *__fastcall msg_43BF2B(void *a1, void *a2)"
 	},
 	"0x43BF5B": {
 		"name": "msg_43BF5B",
-		"sig": "int __fastcall\tmsg_43BF5B(void\t*, void\t*)"
+		"sig": "char *__fastcall msg_43BF5B(void *a1, void *a2)"
 	},
 	"0x43BF6F": {
 		"name": "msg_43BF6F",
@@ -4413,7 +4413,7 @@
 	},
 	"0x43BFA1": {
 		"name": "msg_43BFA1",
-		"sig": "int __thiscall\tmsg_43BFA1(void\t*)"
+		"sig": "_BYTE *__fastcall msg_43BFA1(void *this)"
 	},
 	"0x43C019": {
 		"name": "msg_43C019",
@@ -4517,7 +4517,7 @@
 	},
 	"0x43CCCF": {
 		"name": "msg_send_cmd_85",
-		"sig": "int __thiscall\tmsg_send_cmd_85(void *)"
+		"sig": "void __fastcall msg_send_cmd_85(void *this)"
 	},
 	"0x43CCF8": {
 		"name": "msg_send_item_cursor_info",
@@ -4613,7 +4613,7 @@
 	},
 	"0x43DAE6": {
 		"name": "msg_parse_cmd_39_40_callee",
-		"sig": "bool32_t __thiscall msg_parse_cmd_39_40_callee(int dlvl)"
+		"sig": "bool32_t __fastcall msg_parse_cmd_39_40_callee(int dlvl)"
 	},
 	"0x43DB2D": {
 		"name": "msg_parse_cmd_8",
@@ -4985,7 +4985,7 @@
 	},
 	"0x43FBB5": {
 		"name": "multi_set_packet_header",
-		"sig": "void __thiscall multi_set_packet_header(Packet\t*pkt)"
+		"sig": "void __fastcall multi_set_packet_header(Packet\t*pkt)"
 	},
 	"0x43FC6F": {
 		"name": "multi_send_message_1",
@@ -5097,11 +5097,11 @@
 	},
 	"0x440A9B": {
 		"name": "multi_440A9B",
-		"sig": "bool32_t __fastcall multi_440A9B(ClientInfo *client_info, UserInfo *user_info,\t#393 *ui_info_and_later_player_num)"
+		"sig": "bool32_t __fastcall multi_440A9B(ClientInfo *client_info, UserInfo *user_info,\tUiInfo *ui_info_and_later_player_num)"
 	},
 	"0x440B09": {
 		"name": "multi_440B09",
-		"sig": "bool32_t __fastcall multi_440B09(ClientInfo *client_info, UserInfo *user_info,\t#393 *ui_info, bool32_t\t*exit_program)"
+		"sig": "bool32_t __fastcall multi_440B09(ClientInfo *client_info, UserInfo *user_info,\tUiInfo *ui_info, bool32_t *exit_program)"
 	},
 	"0x440BDB": {
 		"name": "multi_perform_upgrade",
@@ -5165,7 +5165,7 @@
 	},
 	"0x4411C4": {
 		"name": "nthread_start",
-		"sig": "void __thiscall nthread_start(bool start)"
+		"sig": "void __fastcall nthread_start(bool32_t\tstart)"
 	},
 	"0x4411EF": {
 		"name": "nthread_has_lt_500ms_passed",
@@ -5573,7 +5573,7 @@
 	},
 	"0x445E33": {
 		"name": "objects_get_item_id_from_item_code",
-		"sig": "int __thiscall\tobjects_get_item_id_from_item_code(int item_code)"
+		"sig": "int __fastcall\tobjects_get_item_id_from_item_code(int item_code)"
 	},
 	"0x445E4B": {
 		"name": "objects_445E4B",
@@ -5853,7 +5853,7 @@
 	},
 	"0x4497F7": {
 		"name": "path_4497F7",
-		"sig": "void __thiscall path_4497F7(PathStep *path_step)"
+		"sig": "void __fastcall path_4497F7(PathStep *path_step)"
 	},
 	"0x449890": {
 		"name": "path_push_active_step",
@@ -5933,7 +5933,7 @@
 	},
 	"0x449FAA": {
 		"name": "pfile_449FAA",
-		"sig": "int __thiscall\tpfile_449FAA(LPCSTR lpSrcStr, int)"
+		"sig": "LPCSTR\t__fastcall pfile_449FAA(LPCSTR lpSrcStr, int a2, int a3)"
 	},
 	"0x44A036": {
 		"name": "pfile_44A036",
@@ -5977,7 +5977,7 @@
 	},
 	"0x44A419": {
 		"name": "pfile_44A419",
-		"sig": "int __thiscall\tpfile_44A419(char *)"
+		"sig": "int __fastcall\tpfile_44A419(char *)"
 	},
 	"0x44A463": {
 		"name": "pfile_get_perm_name",
@@ -6013,7 +6013,7 @@
 	},
 	"0x44A731": {
 		"name": "pfile_read",
-		"sig": "int __thiscall\tpfile_read(char\t*)"
+		"sig": "uint8_t *__fastcall pfile_read(char *a1, int *a2)"
 	},
 	"0x44A8B3": {
 		"name": "pfile_update",
@@ -6053,7 +6053,7 @@
 	},
 	"0x44AF37": {
 		"name": "player_44AF37",
-		"sig": "int __userpurge player_44AF37@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int, int)"
+		"sig": "int __fastcall\tplayer_44AF37(int arglist, int a2, int a3, int a4, int a5)"
 	},
 	"0x44AF9C": {
 		"name": "player_44AF9C",
@@ -6141,15 +6141,15 @@
 	},
 	"0x44C1E2": {
 		"name": "player_44C1E2",
-		"sig": "int __userpurge player_44C1E2@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int, int, int, int)"
+		"sig": "void __fastcall player_44C1E2(int arglist, int\ta2, int\ta3, int\ta4, int\ta5, int\ta6, int\ta7)"
 	},
 	"0x44C3AC": {
 		"name": "player_44C3AC",
-		"sig": "int __userpurge player_44C3AC@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int, int, int, int, int, int)"
+		"sig": "void __fastcall player_44C3AC(int arglist, int\ta2, int\ta3, int\ta4, int\ta5, int\ta6, int\ta7, int\ta8, int\ta9)"
 	},
 	"0x44C5CF": {
 		"name": "player_44C5CF",
-		"sig": "int __userpurge player_44C5CF@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int, int, int, int, int, int, int,\tint)"
+		"sig": "void __fastcall player_44C5CF(int arglist, int\ta2, int\ta3, int\ta4, int\ta5, int\ta6, int\ta7, int\ta8, int\ta9, int\ta10, int a11)"
 	},
 	"0x44C81E": {
 		"name": "player_44C81E",
@@ -6157,7 +6157,7 @@
 	},
 	"0x44C8BB": {
 		"name": "player_44C8BB",
-		"sig": "int __userpurge player_44C8BB@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int)"
+		"sig": "void __fastcall player_44C8BB(int arglist, int\ta2, int\ta3, int\ta4)"
 	},
 	"0x44C973": {
 		"name": "player_44C973",
@@ -6165,7 +6165,7 @@
 	},
 	"0x44CA26": {
 		"name": "player_44CA26",
-		"sig": "int __userpurge player_44CA26@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int)"
+		"sig": "void __fastcall player_44CA26(int arglist, int\ta2, int\ta3, int\ta4)"
 	},
 	"0x44CB95": {
 		"name": "player_fix_walk_tags",
@@ -6177,7 +6177,7 @@
 	},
 	"0x44CCD8": {
 		"name": "player_44CCD8",
-		"sig": "int __userpurge player_44CCD8@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint)"
+		"sig": "void __fastcall player_44CCD8(int arglist, signed int a2, int a3)"
 	},
 	"0x44CDFD": {
 		"name": "player_44CDFD",
@@ -6189,7 +6189,7 @@
 	},
 	"0x44D1F4": {
 		"name": "player_44D1F4",
-		"sig": "int __userpurge player_44D1F4@\u003ceax\u003e(char arglist@\u003ccl\u003e,\tint, int)"
+		"sig": "void __fastcall player_44D1F4(int arglist, int\ta2, int\ta3, int\ta4)"
 	},
 	"0x44D2F3": {
 		"name": "player_44D2F3",
@@ -6205,7 +6205,7 @@
 	},
 	"0x44D7A0": {
 		"name": "player_44D7A0",
-		"sig": "void __thiscall player_44D7A0(int player_num)"
+		"sig": "void __fastcall player_44D7A0(int player_num)"
 	},
 	"0x44D8D1": {
 		"name": "player_44D8D1",
@@ -6385,7 +6385,7 @@
 	},
 	"0x450D33": {
 		"name": "plrmsg_450D33",
-		"sig": "void __thiscall plrmsg_450D33(bool32_t\ta1)"
+		"sig": "void __fastcall plrmsg_450D33(bool32_t\ta1)"
 	},
 	"0x450D6A": {
 		"name": "plrmsg_set",
@@ -6997,7 +6997,7 @@
 	},
 	"0x459460": {
 		"name": "stores_calc_recharge_cost",
-		"sig": "void __userpurge stores_calc_recharge_cost(int\tinv_num@\u003cecx\u003e, Item item)"
+		"sig": "void __thiscall stores_calc_recharge_cost(int inv_num,\tItem item)"
 	},
 	"0x4594E6": {
 		"name": "stores_talk_adria_recharge",
@@ -7045,7 +7045,7 @@
 	},
 	"0x459CA2": {
 		"name": "stores_459CA2",
-		"sig": "void __userpurge stores_459CA2(int inv_num@\u003cecx\u003e, Item\titem)"
+		"sig": "void __thiscall stores_459CA2(int inv_num, Item item)"
 	},
 	"0x459CE6": {
 		"name": "stores_talk_cain_identify",
@@ -7317,7 +7317,7 @@
 	},
 	"0x45CD9A": {
 		"name": "themes_check_theme_room",
-		"sig": "unsigned int __thiscall themes_check_theme_room(int transparency)"
+		"sig": "unsigned int __fastcall themes_check_theme_room(int transparency)"
 	},
 	"0x45CED2": {
 		"name": "themes_init",
@@ -7413,7 +7413,7 @@
 	},
 	"0x45E0D7": {
 		"name": "tmsg_add",
-		"sig": "int __thiscall\ttmsg_add(void *)"
+		"sig": "void **__fastcall tmsg_add(void *a1, unsigned __int8 a2)"
 	},
 	"0x45E12A": {
 		"name": "tmsg_cleanup",
@@ -8097,7 +8097,7 @@
 	},
 	"0x4698A6": {
 		"name": "SNetInitializeProvider",
-		"sig": "bool32_t __stdcall SNetInitializeProvider(uint32_t id,\tClientInfo *client_info, UserInfo *user_info, #393 *ui_info, FileInfo *file_info)"
+		"sig": "bool32_t __stdcall SNetInitializeProvider(uint32_t id,\tClientInfo *client_info, UserInfo *user_info, UiInfo *ui_info, FileInfo\t*file_info)"
 	},
 	"0x4698AC": {
 		"name": "SNetPerformUpgrade",
@@ -8317,7 +8317,7 @@
 	},
 	"0x46AA50": {
 		"name": "__onexit",
-		"sig": "_onexit_t __cdecl _onexit(_onexit_t)"
+		"sig": "int __cdecl _onexit(int a1)"
 	},
 	"0x46AAE0": {
 		"name": "_atexit",
@@ -8381,11 +8381,11 @@
 	},
 	"0x46B220": {
 		"name": "??1type_info@@UAE@XZ",
-		"sig": "_DWORD\t__thiscall type_info::~type_info(type_info *__hidden this)"
+		"sig": "int __thiscall\ttype_info::~type_info(type_info\t*this)"
 	},
 	"0x46B250": {
 		"name": "??_Gtype_info@@UAEPAXI@Z",
-		"sig": "public: virtual void *\t__thiscall type_info::`scalar deleting destructor'(unsigned int)"
+		"sig": "type_info *__thiscall type_info::`scalar deleting destructor'(type_info *this, char a2)"
 	},
 	"0x46B270": {
 		"name": "_memcpy_0",
@@ -8685,7 +8685,7 @@
 	},
 	"0x46E0F5": {
 		"name": "__seh_longjmp_unwind@4",
-		"sig": "__stdcall _seh_longjmp_unwind(x)"
+		"sig": "int __stdcall _seh_longjmp_unwind(int *a1)"
 	},
 	"0x46E110": {
 		"name": "__trandisp1",
@@ -9165,7 +9165,7 @@
 	},
 	"0x472FE0": {
 		"name": "unknown_libname_2",
-		"sig": "int __cdecl unknown_libname_2(_TBYTE, _TBYTE, int, int)"
+		"sig": "double\t__cdecl\tunknown_libname_2(double a1, double a2)"
 	},
 	"0x4730F7": {
 		"name": "unknown_libname_100",
