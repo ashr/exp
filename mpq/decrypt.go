@@ -28,8 +28,8 @@ func init() {
 	initCryptTable()
 
 	// initialize hash table key and block table key.
-	hashTableKey = fileKey("(hash table)")
-	blockTableKey = fileKey("(block table)")
+	hashTableKey = genFileKey("(hash table)")
+	blockTableKey = genFileKey("(block table)")
 
 	// Initialize file listings.
 	if err := initListings(); err != nil {
@@ -96,8 +96,9 @@ const (
 	hashFileKey hashType = 0x300
 )
 
-// hash returns the hash of the given string, based on the specified hash type.
-func hash(s string, hashType hashType) uint32 {
+// genHash returns the hash of the given string, based on the specified hash
+// type.
+func genHash(s string, hashType hashType) uint32 {
 	s = strings.ToUpper(s)
 	seed1 := uint32(0x7FED7FED)
 	seed2 := uint32(0xEEEEEEEE)
@@ -109,11 +110,11 @@ func hash(s string, hashType hashType) uint32 {
 	return seed1
 }
 
-// fileKey returns the encryption key of the given file.
-func fileKey(relPath string) uint32 {
+// genFileKey returns the encryption key of the given file.
+func genFileKey(relPath string) uint32 {
 	relPath = strings.Replace(relPath, "\\", "/", -1)
 	name := path.Base(relPath)
-	return hash(name, hashFileKey)
+	return genHash(name, hashFileKey)
 }
 
 // listings maps file hashes to their original file paths.
@@ -143,8 +144,8 @@ func initListings() error {
 	sort.Strings(paths)
 	listings = make(map[hashAB]string)
 	for _, path := range paths {
-		hashA := hash(path, hashPathA)
-		hashB := hash(path, hashPathB)
+		hashA := genHash(path, hashPathA)
+		hashB := genHash(path, hashPathB)
 		key := hashAB{hashA: hashA, hashB: hashB}
 		if prev, ok := listings[key]; ok {
 			panic(fmt.Errorf("hash collision between %q and %q", prev, path))

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"sort"
 	"strings"
 
@@ -23,6 +24,8 @@ type Archive struct {
 	blocks []blockEntry
 	// Underlying io.ReaderAt of the archive.
 	r io.ReaderAt
+	// Section size in bytes.
+	sectorSize uint32
 }
 
 // Open opens the given MPQ archive.
@@ -76,23 +79,22 @@ func Open(mpqPath string) (*Archive, error) {
 	if err := binary.Read(bytes.NewReader(dec), binary.LittleEndian, &a.blocks); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return a, nil
-}
 
-// ReadFile returns the contents of the given file in the archive.
-func (a *Archive) ReadFile(relPath string) ([]byte, error) {
-	panic("not yet implemented")
+	// Compute sector size.
+	a.sectorSize = 512 * uint32(math.Pow(2, float64(a.SectorSizeExp)))
+
+	return a, nil
 }
 
 // Files returns the list of file paths contained within the archive.
 func (a *Archive) Files() []string {
 	relPaths := make([]string, 0, len(a.hashes))
-	for _, h := range a.hashes {
-		if h.HashA == 0xFFFFFFFF && h.HashB == 0xFFFFFFFF {
+	for _, hash := range a.hashes {
+		if hash.HashA == 0xFFFFFFFF && hash.HashB == 0xFFFFFFFF {
 			// skip unused hash.
 			continue
 		}
-		key := hashAB{hashA: h.HashA, hashB: h.HashB}
+		key := hashAB{hashA: hash.HashA, hashB: hash.HashB}
 		relPath, ok := listings[key]
 		if !ok {
 			panic(fmt.Errorf("unable to locate path with hash A 0x%08X and hash B 0x%08X", key.hashA, key.hashB))
@@ -101,6 +103,44 @@ func (a *Archive) Files() []string {
 	}
 	sort.Strings(relPaths)
 	return relPaths
+}
+
+// ReadFile returns the contents of the given file in the archive.
+func (a *Archive) ReadFile(relPath string) ([]byte, error) {
+	// Locate hash entry associated with the file.
+	relPath = strings.Replace(relPath, "/", "\\", -1)
+	hash, err := a.locateHash(relPath)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	_ = hash
+
+	panic("not yet implemented")
+}
+
+// locateHash locates the hash entry of the given file.
+func (a *Archive) locateHash(relPath string) (hashEntry, error) {
+	index := genHash(relPath, hashTableIndex)
+	hashA := genHash(relPath, hashPathA)
+	hashB := genHash(relPath, hashPathB)
+	mask := a.HashCount - 1
+	// startIndex specifies an index into the hash table, from where to start
+	// searching for the hash entry of the given file.
+	startIndex := index & mask
+	for _, hash := range a.hashes[startIndex:] {
+		if hash.HashA == hashA && hash.HashB == hashB {
+			return hash, nil
+		}
+	}
+	// The hash table wraps around. For instance, the diabdat.mpq hash table
+	// contains 4096 entries, and the start index of "sfx/towners/healer25.wav"
+	// is at 4089, while the actual hash entry index of healer25.wav is at 0.
+	for _, hash := range a.hashes[:startIndex] {
+		if hash.HashA == hashA && hash.HashB == hashB {
+			return hash, nil
+		}
+	}
+	return hashEntry{}, errors.Errorf("unable to locate hash entry for %q", relPath)
 }
 
 // A header is an MPQ header.
