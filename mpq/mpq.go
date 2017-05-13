@@ -24,7 +24,7 @@ type Archive struct {
 	blocks []blockEntry
 	// Underlying io.ReaderAt of the archive.
 	r io.ReaderAt
-	// Section size in bytes.
+	// Sector size in bytes.
 	sectorSize uint32
 }
 
@@ -107,15 +107,70 @@ func (a *Archive) Files() []string {
 
 // ReadFile returns the contents of the given file in the archive.
 func (a *Archive) ReadFile(relPath string) ([]byte, error) {
-	// Locate hash entry associated with the file.
+	// Locate hash and block entry associated with the file.
 	relPath = strings.Replace(relPath, "/", "\\", -1)
 	hash, err := a.locateHash(relPath)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	_ = hash
+	block := a.blocks[hash.BlockIndex]
 
+	// Compute file encryption key.
+	fileKey := genFileKey(relPath)
+
+	// Calculate number of sectors.
+	nsectors := int(block.FileSize / a.sectorSize)
+	// even specifies whether the file size is an even multiple of sector size.
+	even := block.FileSize%a.sectorSize == 0
+	if !even {
+		nsectors++
+	}
+
+	// Decode sector offset table.
+	sectorOffsets, err := a.decodeSectorOffsets(fileKey, block, nsectors, even)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	_ = sectorOffsets
 	panic("not yet implemented")
+}
+
+// decodeSectorOffsets decodes and returns the sector offset table of the given
+// file.
+func (a *Archive) decodeSectorOffsets(fileKey uint32, block blockEntry, nsectors int, even bool) ([]uint32, error) {
+	// Compressed file.
+	sectorOffsets := make([]uint32, (nsectors + 1))
+	if block.Flags&fileImplode != 0 {
+		// Decrypt sector offset table.
+		sectorOffsetTableKey := fileKey - 1
+		const int32Size = 4
+		enc := make([]byte, (nsectors+1)*int32Size)
+		if _, err := a.r.ReadAt(enc, int64(block.BlockOffset)); err != nil {
+			return nil, errors.WithStack(err)
+		}
+		dec := decrypt(enc, sectorOffsetTableKey)
+		if err := binary.Read(bytes.NewReader(dec), binary.LittleEndian, &sectorOffsets); err != nil {
+			return nil, errors.WithStack(err)
+		}
+		return sectorOffsets, nil
+	}
+	offset := uint32(0)
+	// Uncompressed file.
+	for i := range sectorOffsets {
+		sectorOffsets[i] = offset
+		// The size of each sector within an uncompressed block is implicitly
+		// sectorSize number of bytes.
+		//
+		// If the file size is not an even multiple of sectorSize, the size of the
+		// last sector is fileSize%sectorSize.
+		if i == nsectors-1 && !even {
+			offset += block.FileSize % a.sectorSize
+		} else {
+			offset += a.sectorSize
+		}
+	}
+	return sectorOffsets, nil
 }
 
 // locateHash locates the hash entry of the given file.
@@ -207,7 +262,7 @@ const (
 	fileEncrypted  blockFlag = 0x00010000 // encrypted file
 	filePosDepKey  blockFlag = 0x00020000 // position dependent decryption key
 	filePatchFile  blockFlag = 0x00100000 // incremental patch file for an existing file in the base MPQ
-	fileSingleUnit blockFlag = 0x01000000 // file contained in a single unit, not split in sections
+	fileSingleUnit blockFlag = 0x01000000 // file contained in a single unit, not split in sectors
 	fileDeleted    blockFlag = 0x02000000 // deleted file; used by patch archives to delete files in lower-priority archives
 	fileSectorCRC  blockFlag = 0x04000000 // sector CRC checksums
 	fileExists     blockFlag = 0x80000000 // file present
