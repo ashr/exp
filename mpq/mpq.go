@@ -4,6 +4,7 @@ package mpq
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"sort"
@@ -85,7 +86,21 @@ func (a *Archive) ReadFile(relPath string) ([]byte, error) {
 
 // Files returns the list of file paths contained within the archive.
 func (a *Archive) Files() []string {
-	panic("not yet implemented")
+	relPaths := make([]string, 0, len(a.hashes))
+	for _, h := range a.hashes {
+		if h.HashA == 0xFFFFFFFF && h.HashB == 0xFFFFFFFF {
+			// skip unused hash.
+			continue
+		}
+		key := hashAB{hashA: h.HashA, hashB: h.HashB}
+		relPath, ok := listings[key]
+		if !ok {
+			panic(fmt.Errorf("unable to locate path with hash A 0x%08X and hash B 0x%08X", key.hashA, key.hashB))
+		}
+		relPaths = append(relPaths, relPath)
+	}
+	sort.Strings(relPaths)
+	return relPaths
 }
 
 // A header is an MPQ header.
