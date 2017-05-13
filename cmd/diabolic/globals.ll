@@ -1,7 +1,7 @@
 %struct.HWND__ = type { i32 }
 %struct.tagPALETTEENTRY = type { i8, i8, i8, i8 }
 %struct.EncData = type { i32, i8, i8, i16, [1 x i8] }
-%struct.Item = type { i32, i16, [2 x i8], i32, i32, i32, i32, i8*, i32, i32, i32, i32, i32, i32, [3 x i8], i32, i32, i32, [64 x i8], [64 x i8], i8, i8, i8, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i8, i32, [2 x i8], i32, i32, i32, i32, i32, i32, i8, i8, [2 x i8], i32, i32, i32, i32, i8, i8, i8, i8, i32, i32, i32 }
+%struct.Item = type { i32, i16, [2 x i8], i32, i32, i32, i32, i8*, i32, i32, i32, i32, i32, i8, [3 x i8], i32, i32, i8, [64 x i8], [64 x i8], i8, i8, i8, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i8, i32, [2 x i8], i32, i32, i32, i32, i32, i32, i8, i8, [2 x i8], i32, i32, i32, i32, i8, i8, i8, i8, i32, i32, i32 }
 %struct.HINSTANCE__ = type { i32 }
 %struct._GUID = type { i32, i16, i16, [8 x i8] }
 %struct.IDirectDraw = type { %struct.IDirectDrawVtbl* }
@@ -147,6 +147,15 @@
 @game_pass             = global [128 x i8] zeroinitializer, !addr !{!"0x6771C4"}
 @is_quest_level        = global i8 zeroinitializer,         !addr !{!"0x5CF31D"}
 @quest_level           = global i8 zeroinitializer,         !addr !{!"0x5CCB10"}
+@byte_4B8B88           = global [256 x i8] zeroinitializer, !addr !{!"0x4B8B88"}
+@description_line      = global [260 x i8] zeroinitializer, !addr !{!"0x4B8978"}
+@dword_4B8834          = global i32 zeroinitializer,        !addr !{!"0x4B8834"}
+@dword_4B8954          = global i32 zeroinitializer,        !addr !{!"0x4B8954"}
+@speedbook_open        = global i32 zeroinitializer,        !addr !{!"0x4B8C98"}
+@draw_mode             = global i32 zeroinitializer,        !addr !{!"0x52571C"}
+
+@description_box_nlines = global i32 zeroinitializer,        !addr !{!"0x4B8820"}
+@description_box_update = global i32 zeroinitializer,        !addr !{!"0x4B8824"}
 
 @DDP                   = global %struct.IDirectDrawPaletteVtbl* zeroinitializer, !addr !{!"0x52A51C"}
 
