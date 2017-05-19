@@ -55,7 +55,7 @@ type MonsterData struct {
 	Intelligence int8
 	// Chance to hit.
 	ChanceToHit int8
-	// Starting frame of attack animation; 1-indexed.
+	// Trigger frame of attack animation; 1-indexed.
 	AttackFrame int8
 	// Minimum damage.
 	MinDamage int8
@@ -63,7 +63,7 @@ type MonsterData struct {
 	MaxDamage int8
 	// Chance to hit with special attack.
 	ChanceToHitSpecial int8
-	// Starting frame of attack animation with special attack; 1-indexed.
+	// Trigger frame of attack animation with special attack; 1-indexed.
 	AttackFrameSpecial int8
 	// Minimum damage with special attack.
 	MinDamageSpecial int8
@@ -88,7 +88,7 @@ type MonsterData struct {
 	Exp int16
 }
 
-// MonsterAI specifies the set of monster AIs.
+// MonsterAI represents the set of monster AIs.
 type MonsterAI uint8
 
 // Monster AIs.
@@ -125,19 +125,6 @@ const (
 	MonsterAI_UniqueSuccubus     MonsterAI = 29 // Red Vex, Blue Jade
 	MonsterAI_Lachdanan          MonsterAI = 30
 	MonsterAI_WarlordOfBlood     MonsterAI = 31
-)
-
-// MonsterAction specifies the set of monster actions.
-type MonsterAction uint8
-
-// Monster actions.
-const (
-	MonsterActionStand   MonsterAction = 0 // monster action "n"
-	MonsterActionWalk    MonsterAction = 1 // monster action "w"
-	MonsterActionAttack  MonsterAction = 2 // monster action "a"
-	MonsterActionHit     MonsterAction = 3 // monster action "h"
-	MonsterActionDie     MonsterAction = 4 // monster action "d"
-	MonsterActionSpecial MonsterAction = 5 // monster action "s"
 )
 
 // String returns the string representation of the monster AI.
@@ -191,7 +178,52 @@ func (ai MonsterAI) String() string {
 	if s, ok := m[ai]; ok {
 		return s
 	}
-	return fmt.Sprintf("unknown monster AI %d", uint8(ai))
+	panic(fmt.Errorf("support for monster AI %d not yet implemented", uint8(ai)))
+}
+
+// MonsterAction represents the set of monster actions.
+type MonsterAction uint8
+
+// Monster actions.
+const (
+	MonsterActionStand   MonsterAction = 0 // monster action "n"
+	MonsterActionWalk    MonsterAction = 1 // monster action "w"
+	MonsterActionAttack  MonsterAction = 2 // monster action "a"
+	MonsterActionHit     MonsterAction = 3 // monster action "h"
+	MonsterActionDie     MonsterAction = 4 // monster action "d"
+	MonsterActionSpecial MonsterAction = 5 // monster action "s"
+)
+
+// Rune returns the rune representation of the monster action.
+func (action MonsterAction) Rune() rune {
+	m := map[MonsterAction]rune{
+		MonsterActionStand:   'n',
+		MonsterActionWalk:    'w',
+		MonsterActionAttack:  'a',
+		MonsterActionHit:     'h',
+		MonsterActionDie:     'd',
+		MonsterActionSpecial: 's',
+	}
+	if r, ok := m[action]; ok {
+		return r
+	}
+	panic(fmt.Errorf("support for monster action %d not yet implemented", uint8(action)))
+}
+
+// String returns the string representation of the monster action.
+func (action MonsterAction) String() string {
+	m := map[MonsterAction]string{
+		MonsterActionStand:   "stand",
+		MonsterActionWalk:    "walk",
+		MonsterActionAttack:  "attack",
+		MonsterActionHit:     "hit",
+		MonsterActionDie:     "die",
+		MonsterActionSpecial: "special",
+	}
+	if s, ok := m[action]; ok {
+		return s
+	}
+	panic(fmt.Errorf("support for monster action %d not yet implemented", uint8(action)))
 }
 
 // --- [ parsing ] -------------------------------------------------------------
@@ -354,10 +386,7 @@ type monsterData struct {
 	//
 	// offset 0069 (1 byte)
 	ChanceToHit int8
-	// TODO: Figure out how AttackFrame and AttackFrameSpecial works, and if they
-	// specify the starting attack frame or hit frame.
-
-	// Starting frame of attack animation; 1-indexed.
+	// Trigger frame of attack animation; 1-indexed.
 	//
 	// offset 006A (1 byte)
 	AttackFrame int8
@@ -373,7 +402,7 @@ type monsterData struct {
 	//
 	// offset 006D (1 byte)
 	ChanceToHitSpecial int8
-	// Starting frame of attack animation with special attack; 1-indexed.
+	// Trigger frame of attack animation with special attack; 1-indexed.
 	//
 	// offset 006E (1 byte)
 	AttackFrameSpecial int8
