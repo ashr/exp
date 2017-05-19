@@ -2,6 +2,10 @@
 package d1
 
 import (
+	"crypto/sha1"
+	"fmt"
+	"io/ioutil"
+
 	"github.com/decomp/exp/bin"
 	_ "github.com/decomp/exp/bin/pe" // register PE decoder
 	"github.com/pkg/errors"
@@ -18,8 +22,21 @@ type Executable struct {
 }
 
 // ParseFile parses the given diablo.exe executable.
-func ParseFile(path string) (*Executable, error) {
-	file, err := bin.ParseFile(path)
+func ParseFile(exePath string) (*Executable, error) {
+	// Sanity check.
+	buf, err := ioutil.ReadFile(exePath)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	sum := fmt.Sprintf("%040x", sha1.Sum(buf))
+	switch sum {
+	case "ebaee2acb462a0ae9c895a0e33079c94796cb0b6":
+		// supported.
+	default:
+		return nil, errors.Errorf("support for parsing diablo.exe with SHA1 hashsum `%s` not yet implemented", sum)
+	}
+	// Parse executable.
+	file, err := bin.ParseFile(exePath)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
