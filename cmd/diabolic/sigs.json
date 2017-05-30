@@ -129,7 +129,7 @@
 	},
 	"0x402233": {
 		"name": "automap_402233",
-		"sig": ""
+		"sig": "char __fastcall automap_402233(signed int a1, signed int a2, __int16 automap_type_id)"
 	},
 	"0x4029A8": {
 		"name": "automap_4029A8",
@@ -1652,7 +1652,7 @@
 		"sig": "void __fastcall engine_mem_load_file_with(char\t*path, void *buf)"
 	},
 	"0x4176D2": {
-		"name": "engine_4176D2",
+		"name": "engine_decode_cl2_with_trn",
 		"sig": ""
 	},
 	"0x417745": {
@@ -8673,10 +8673,6 @@
 	},
 	"0x46E016": {
 		"name": "__NLG_Notify",
-		"sig": ""
-	},
-	"0x46E030": {
-		"name": "unknown_libname_27",
 		"sig": ""
 	},
 	"0x46E038": {
