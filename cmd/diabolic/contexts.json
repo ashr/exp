@@ -70,6 +70,8 @@
 	"0x439BBB": {"args": {"0": {"param": "0"}}},
 	"0x439CBF": {"args": {"0": {"param": "0"}}},
 	"0x439D50": {"args": {"0": {"param": "0"}}},
+	"0x43A0C2": {"args": {"0": {"Mem.offset": "-1"}}},
+	"0x43A11A": {"args": {"0": {"Mem.offset": "-1"}}},
 	"0x46A22D": {"regs": {"EAX": {"min": "1", "max": "3"}}},
 	"0x46A234": {"regs": {"ECX": {"min": "-4", "max": "-1"}}},
 	"0x46A3A2": {"regs": {"ECX": {"min": "-7", "max": "0"}}},
