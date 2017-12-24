@@ -52,6 +52,7 @@ func Open(mpqPath string) (*Archive, error) {
 
 	// Decrypt hash table.
 	const hashEntrySize = 16
+	fmt.Println("a.HashCount:", a.HashCount)
 	n := hashEntrySize * int64(a.HashCount)
 	enc := make([]byte, n)
 	if _, err := a.r.ReadAt(enc, int64(a.HashTableOffset)); err != nil {
@@ -132,8 +133,69 @@ func (a *Archive) ReadFile(relPath string) ([]byte, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	_ = sectorOffsets
-	panic("not yet implemented")
+	// NOTE: Extraction works for diabdat.mpq but is broken for the drtl109b.exe
+	// overlay MPQ, which contains the diablo-109b.exe binary patch.
+
+	// TODO: Clean up the code from this point until the end of the function.
+	// Extract file data by optionally decrypting and exploding the content of
+	// its sectors.
+	data := make([]byte, 0, block.FileSize)
+	for i, start := range sectorOffsets[:len(sectorOffsets)-1] {
+		end := sectorOffsets[i+1]
+		size := end - start
+		enc := make([]byte, size)
+		if _, err := a.r.ReadAt(enc, int64(block.BlockOffset+start)); err != nil {
+			return nil, errors.WithStack(err)
+		}
+		var dec []byte
+		if block.Flags&fileEncrypted != 0 {
+			// Compute sector encryption key based on file key.
+			sectorKey := fileKey + uint32(i)
+			// Decrypt sector content.
+			dec = decrypt(enc, sectorKey)
+		} else {
+			// The sector content is not encrypted.
+			dec = enc
+		}
+
+		isZipped := block.Flags&fileImplode != 0
+		if i == nsectors-1 && uint32(len(data)+len(dec)) == block.FileSize {
+			// Copy the last sector raw if the file size is equal to the
+			// (nsectors-1)*sectorSize + size of last decrypted sector.
+			isZipped = false
+		}
+		if uint32(len(dec)) == a.sectorSize {
+			// Copy the sector raw if the decrypted sector content length is equal
+			// to the sector size.
+			isZipped = false
+		}
+		if isZipped {
+			// Explode sector with PKZIP.
+			sector, err := explode(dec)
+			if err != nil {
+				return nil, errors.WithStack(err)
+			}
+			// Trim trailing zeroes from the sector, which are present if the file
+			// size is not an even multiple of sector size, and the last sector was
+			// compressed.
+			//
+			// The last sector would otherwise add sectorSize bytes to data, rather
+			// than block.FileSize%sectorSize bytes.
+			if i == nsectors-1 && !even {
+				sector = sector[:block.FileSize%a.sectorSize]
+			}
+			data = append(data, sector...)
+		} else {
+			// The section content is not compressed.
+			data = append(data, dec...)
+		}
+	}
+
+	// Sanity check of file length.
+	if uint32(len(data)) != block.FileSize {
+		return nil, errors.Errorf("file content length mismatch; expected %d, got %d", block.FileSize, len(data))
+	}
+	return data, nil
 }
 
 // decodeSectorOffsets decodes and returns the sector offset table of the given
